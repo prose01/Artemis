@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis", "Artemis\Artemis.csproj", "{042B9EA9-25D3-47B1-B71E-F93051544DB2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{042B9EA9-25D3-47B1-B71E-F93051544DB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{042B9EA9-25D3-47B1-B71E-F93051544DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{042B9EA9-25D3-47B1-B71E-F93051544DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{042B9EA9-25D3-47B1-B71E-F93051544DB2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E1C0731E-E343-4790-972F-CD1A671D4DD0}
+	EndGlobalSection
+EndGlobal

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Peter Rose - Private\\Artemis\\Artemis\\Artemis\\Artemis.csproj": {}
+    "C:\\Peter Rose - Private\\Artemis\\Artemis\\Artemis.csproj": {}
   },
   "projects": {
-    "C:\\Peter Rose - Private\\Artemis\\Artemis\\Artemis\\Artemis.csproj": {
+    "C:\\Peter Rose - Private\\Artemis\\Artemis\\Artemis.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Peter Rose - Private\\Artemis\\Artemis\\Artemis\\Artemis.csproj",
+        "projectUniqueName": "C:\\Peter Rose - Private\\Artemis\\Artemis\\Artemis.csproj",
         "projectName": "Artemis",
-        "projectPath": "C:\\Peter Rose - Private\\Artemis\\Artemis\\Artemis\\Artemis.csproj",
+        "projectPath": "C:\\Peter Rose - Private\\Artemis\\Artemis\\Artemis.csproj",
         "packagesPath": "C:\\Users\\lripro\\.nuget\\packages\\",
-        "outputPath": "C:\\Peter Rose - Private\\Artemis\\Artemis\\Artemis\\obj\\",
+        "outputPath": "C:\\Peter Rose - Private\\Artemis\\Artemis\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -41,6 +41,28 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[2.10.4, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[5.5.1, )"
+            },
+            "Swashbuckle.AspNetCore.SwaggerGen": {
+              "target": "Package",
+              "version": "[5.5.1, )"
+            },
+            "Swashbuckle.AspNetCore.SwaggerUi": {
+              "target": "Package",
+              "version": "[5.5.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

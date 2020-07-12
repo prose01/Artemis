@@ -1,4 +1,5 @@
 using Artemis.Data;
+using Artemis.Helpers;
 using Artemis.Interfaces;
 using Artemis.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -89,6 +90,9 @@ namespace Artemis
 
             // Add our repository type(s)
             services.AddSingleton<ICurrentUserRepository, CurrentUserRepository>();
+
+            // Add our helper method(s)
+            services.AddSingleton<IHelperMethods, HelperMethods>();
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>

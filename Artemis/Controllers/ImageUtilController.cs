@@ -1,5 +1,6 @@
 ﻿using Artemis.Interfaces;
 using Artemis.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +10,9 @@ using System.Threading.Tasks;
 
 namespace Artemis.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ImageUtilController : Controller
     {
@@ -23,6 +26,8 @@ namespace Artemis.Controllers
             _helper = helperMethods;
             _imageUtil = imageUtil;
         }
+
+        #region CurrentUser
 
         /// <summary>Upload images to the profile image folder.</summary>
         /// <param name="image"></param>
@@ -95,12 +100,57 @@ namespace Artemis.Controllers
             }
         }
 
+        #endregion
+
+        #region Profile
+
+        /// <summary>Gets all images from specified profileId.</summary>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <returns></returns>
+        [HttpGet("~/GetProfileImages/{profileId}")]
+        public async Task<IActionResult> GetProfileImages(string profileId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(profileId)) return BadRequest();
+
+                return Ok(await _imageUtil.GetImagesAsync(profileId));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>Gets an images from Profile by Image fileName.</summary>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <param name="fileName">The image fileName.</param>
+        /// <returns></returns>
+        [HttpGet("~/GetProfileImageByFileName/{profileId},{fileName}")]
+        public async Task<IActionResult> GetProfileImageByFileName(string profileId, string fileName)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(profileId)) return BadRequest();
+                if (string.IsNullOrEmpty(fileName)) return BadRequest();
+
+                return Ok(await _imageUtil.GetImageByFileName(profileId, fileName));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
         #region Admin methods.
 
         /// <summary>Deletes all images for profile. There is no going back!</summary>
         /// <param name="currentUser">The CurrentUser.</param>
         /// <param name="profileId">The profile identifier.</param>
         /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
+        [HttpPost("~/DeleteAllImagesForProfile")]
         public IActionResult DeleteAllImagesForProfile(CurrentUser currentUser, string profileId)
         {
             if (!currentUser.Admin) throw new Exception("You don't have admin rights to delete other people's images.");
@@ -118,6 +168,7 @@ namespace Artemis.Controllers
 
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
         /// <param name="currentUser">The CurrentUser.</param>
+        [HttpPost("~/DeleteAllImagesForCurrentUser")]
         public IActionResult DeleteAllImagesForCurrentUser(CurrentUser currentUser)
         {
             try

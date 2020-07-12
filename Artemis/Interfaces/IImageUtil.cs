@@ -9,7 +9,7 @@ namespace Artemis.Interfaces
     {
         Task AddImageToCurrentUser(CurrentUser currentUser, IFormFile photo, string title);
         Task DeleteImagesFromCurrentUser(CurrentUser currentUser, string[] imageIds);
-        //Task<List<byte[]>> GetImagesAsync(string profileId);
+        Task<List<byte[]>> GetImagesAsync(string profileId);
         Task<byte[]> GetImageByFileName(string profileId, string fileName);
         void DeleteAllImagesForProfile(CurrentUser currentUser, string profileId);
         void DeleteAllImagesForCurrentUser(CurrentUser currentUser);

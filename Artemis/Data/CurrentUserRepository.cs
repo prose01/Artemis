@@ -17,6 +17,33 @@ namespace Artemis.Data
             _context = new ProfileContext(settings);
         }
 
+        /// <summary>Gets the current profile by Auth0Id.</summary>
+        /// <param name="auth0Id">The Auth0Id.</param>
+        /// <returns></returns>
+        public async Task<CurrentUser> GetCurrentProfileByAuth0Id(string auth0Id)
+        {
+            try
+            {
+                var filter = Builders<CurrentUser>.Filter.Eq("Auth0Id", auth0Id);
+
+                var update = Builders<CurrentUser>
+                                .Update.Set(e => e.LastActive, DateTime.Now);
+
+                var options = new FindOneAndUpdateOptions<CurrentUser>
+                {
+                    ReturnDocument = ReturnDocument.After
+                };
+
+                return await _context.CurrentUser.FindOneAndUpdateAsync(filter, update, options);
+
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         /// <summary>Adds the image to profile.</summary>
         /// <param name="currentUser">The current user.</param>
         /// <param name="fileName">Name of the file.</param>

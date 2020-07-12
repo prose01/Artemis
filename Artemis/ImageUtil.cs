@@ -94,41 +94,41 @@ namespace Artemis
             }
         }
 
-        /// <summary>Gets all images from specified profileId.</summary>
-        /// <param name="profileId">The profile identifier.</param>
-        /// <returns></returns>
-        public async Task<List<byte[]>> GetImagesAsync(string profileId)
-        {
-            List<byte[]> images = new List<byte[]>();
+        ///// <summary>Gets all images from specified profileId.</summary>
+        ///// <param name="profileId">The profile identifier.</param>
+        ///// <returns></returns>
+        //public async Task<List<byte[]>> GetImagesAsync(string profileId)
+        //{
+        //    List<byte[]> images = new List<byte[]>();
 
-            try
-            {
-                byte[] result;
+        //    try
+        //    {
+        //        byte[] result;
 
-                // TODO: Find a place for you files!
-                if (Directory.Exists($"C:/Peter Rose - Private/Photos/123"))
-                {
-                    var files = Directory.GetFiles($"C:/Peter Rose - Private/Photos/123/");
+        //        // TODO: Find a place for you files!
+        //        if (Directory.Exists($"C:/Peter Rose - Private/Photos/123"))
+        //        {
+        //            var files = Directory.GetFiles($"C:/Peter Rose - Private/Photos/123/");
 
-                    foreach (var file in files)
-                    {
-                        using (FileStream stream = File.Open(file, FileMode.Open))
-                        {
-                            result = new byte[stream.Length];
-                            await stream.ReadAsync(result, 0, (int)stream.Length);
-                        }
+        //            foreach (var file in files)
+        //            {
+        //                using (FileStream stream = File.Open(file, FileMode.Open))
+        //                {
+        //                    result = new byte[stream.Length];
+        //                    await stream.ReadAsync(result, 0, (int)stream.Length);
+        //                }
 
-                        images.Add(result);
-                    }
-                }
+        //                images.Add(result);
+        //            }
+        //        }
 
-                return images;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //        return images;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
         /// <summary>Gets an images from CurrentUser by Image fileName.</summary>
         /// <param name="currentUser">The current user.</param>

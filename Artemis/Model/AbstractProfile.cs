@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Artemis.Model
 {
-    [BsonKnownTypes(typeof(CurrentUser), typeof(Profile))]
+    [BsonKnownTypes(typeof(CurrentUser))]
     public abstract class AbstractProfile
     {
         [BsonId]

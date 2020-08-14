@@ -37,7 +37,7 @@ namespace Artemis.Controllers
         [HttpPost("~/UploadImage")]
         public async Task<IActionResult> UploadImage([FromForm] IFormFile image, [FromForm] string title)
         {
-            if (!ModelState.IsValid) throw new ArgumentException($"ModelState is not valid {ModelState.IsValid}.", nameof(image));
+            //if (!ModelState.IsValid) throw new ArgumentException($"ModelState is not valid {ModelState.IsValid}.", nameof(image));    unnecessary 
             if (image.Length < 0) throw new ArgumentException($"Image length is < 1 {image.Length}.", nameof(image));
 
             try
@@ -61,7 +61,7 @@ namespace Artemis.Controllers
         [HttpPost("~/DeleteImage")]
         public async Task<IActionResult> DeleteImage([FromBody] string[] imageIds)
         {
-            if (!ModelState.IsValid) throw new ArgumentException($"ModelState is not valid {ModelState.IsValid}.", nameof(imageIds));
+            //if (!ModelState.IsValid) throw new ArgumentException($"ModelState is not valid {ModelState.IsValid}.", nameof(imageIds)); unnecessary 
 
             try
             {

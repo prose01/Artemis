@@ -1,5 +1,4 @@
 ﻿using Artemis.Interfaces;
-using Artemis.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -147,17 +146,22 @@ namespace Artemis.Controllers
         #region Admin methods.
 
         /// <summary>Deletes all images for profile. There is no going back!</summary>
-        /// <param name="currentUser">The CurrentUser.</param>
-        /// <param name="profileId">The profile identifier.</param>
+        /// <param name="profileIds">The profile identifiers.</param>
         /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
         [HttpPost("~/DeleteAllImagesForProfile")]
-        public IActionResult DeleteAllImagesForProfile(CurrentUser currentUser, string profileId)
+        public async Task<IActionResult> DeleteAllImagesForProfile([FromBody] string[] profileIds)
         {
-            if (!currentUser.Admin) throw new Exception("You don't have admin rights to delete other people's images.");
-
             try
             {
-                _imageUtil.DeleteAllImagesForProfile(currentUser, profileId);
+                var currentUser = await _helper.GetCurrentUserProfile(User);
+
+                if (!currentUser.Admin) throw new Exception("You don't have admin rights to delete other people's images.");
+
+                foreach (var profileId in profileIds)
+                {
+                    _imageUtil.DeleteAllImagesForProfile(currentUser, profileId);
+                }
+
                 return Ok();
             }
             catch (Exception ex)
@@ -167,12 +171,15 @@ namespace Artemis.Controllers
         }
 
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
-        /// <param name="currentUser">The CurrentUser.</param>
         [HttpPost("~/DeleteAllImagesForCurrentUser")]
-        public IActionResult DeleteAllImagesForCurrentUser(CurrentUser currentUser)
+        public async Task<IActionResult> DeleteAllImagesForCurrentUser()
         {
             try
             {
+                var currentUser = await _helper.GetCurrentUserProfile(User);
+
+                if (currentUser.Admin) return BadRequest(); // Admins cannot delete themseleves.
+
                 _imageUtil.DeleteAllImagesForCurrentUser(currentUser);
                 return Ok();
             }

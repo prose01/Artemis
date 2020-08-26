@@ -171,10 +171,10 @@ namespace Artemis
             try
             {
                 // TODO: Find a place for you files!
-                if (Directory.Exists($"C:/Peter Rose - Private/Photos/{profileId}"))
-                {
-                    Directory.Delete($"C:/Peter Rose - Private/Photos/{profileId}", true);
-                }
+                //if (Directory.Exists($"C:/Peter Rose - Private/Photos/{profileId}"))
+                //{
+                //    Directory.Delete($"C:/Peter Rose - Private/Photos/{profileId}", true);
+                //}
             }
             catch (Exception ex)
             {
@@ -189,10 +189,10 @@ namespace Artemis
             try
             {
                 // TODO: Find a place for you files!
-                if (Directory.Exists($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}"))
-                {
-                    Directory.Delete($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}", true);
-                }
+                //if (Directory.Exists($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}"))
+                //{
+                //    Directory.Delete($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}", true);
+                //}
             }
             catch (Exception ex)
             {

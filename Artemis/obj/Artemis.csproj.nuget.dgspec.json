@@ -44,11 +44,11 @@
           "dependencies": {
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[3.1.5, )"
+              "version": "[3.1.7, )"
             },
             "MongoDB.Driver": {
               "target": "Package",
-              "version": "[2.10.4, )"
+              "version": "[2.11.1, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

@@ -31,9 +31,6 @@ namespace Artemis.Model
         [Range(0, 250)]
         public abstract int? Height { get; set; }
 
-        [Range(0, 300)]  // Might not
-        public abstract int? Weight { get; set; }
-
         [StringLength(2000, ErrorMessage = "Description length cannot be more than 2000.")]
         public abstract string Description { get; set; }
         public abstract List<ImageModel> Images { get; set; }
@@ -43,7 +40,6 @@ namespace Artemis.Model
         //public abstract string JobTitle { get; set; }
 
         [BsonRepresentation(BsonType.String)]
-        //[EnumDataType(typeof(GenderType))]
         public abstract GenderType Gender { get; set; }
 
         [BsonRepresentation(BsonType.String)]
@@ -54,9 +50,6 @@ namespace Artemis.Model
 
         [BsonRepresentation(BsonType.String)]
         public abstract SmokingHabitsType SmokingHabits { get; set; }
-
-        //[BsonRepresentation(BsonType.String)]  // Maybe not
-        //public abstract AllergiesType Allergies { get; set; }
 
         public abstract HasChildrenType HasChildren { get; set; }
 
@@ -74,22 +67,7 @@ namespace Artemis.Model
         public abstract EducationStatusType EducationStatus { get; set; }
 
         [BsonRepresentation(BsonType.String)]
-        public abstract EducationLevelType EducationLevel { get; set; }
-
-        [BsonRepresentation(BsonType.String)]
         public abstract EmploymentStatusType EmploymentStatus { get; set; }
-
-        //[BsonRepresentation(BsonType.String)]
-        //public abstract EmploymentAreaType EmploymentArea { get; set; }
-
-        //[BsonRepresentation(BsonType.String)]
-        //public abstract EmploymentLevelType EmploymentLevel { get; set; }
-
-        //[BsonRepresentation(BsonType.String)] //Maybe not
-        //public abstract PoliticalOrientationType PoliticalOrientation { get; set; }
-
-        //[BsonRepresentation(BsonType.String)] //Maybe not
-        //public abstract ReligiousOrientationType ReligiousOrientation { get; set; }
 
         [BsonRepresentation(BsonType.String)]
         public abstract SportsActivityType SportsActivity { get; set; }

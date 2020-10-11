@@ -35,7 +35,8 @@ namespace Artemis.Model
         public abstract string Description { get; set; }
         public abstract List<ImageModel> Images { get; set; }
 
-        //public abstract string[] Tags { get; set; }
+        [MaxLength(10)]
+        public abstract List<string> Tags { get; set; }
 
         //public abstract string JobTitle { get; set; }
 

@@ -36,8 +36,8 @@ namespace Artemis.Controllers
         [HttpPost("~/UploadImage")]
         public async Task<IActionResult> UploadImage([FromForm] IFormFile image, [FromForm] string title)
         {
-            //if (!ModelState.IsValid) throw new ArgumentException($"ModelState is not valid {ModelState.IsValid}.", nameof(image));    unnecessary 
             if (image.Length < 0) throw new ArgumentException($"Image length is < 1 {image.Length}.", nameof(image));
+            if (string.IsNullOrEmpty(title)) throw new ArgumentException($"Image must have a title.", nameof(title));
 
             try
             {

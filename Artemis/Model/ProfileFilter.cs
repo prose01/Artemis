@@ -12,11 +12,7 @@ namespace Artemis.Model
         public List<int?> Age { get; set; }
         public List<int?> Height { get; set; }
         public string Description { get; set; }
-
-        //public override string[] Tags { get; set; }
-
-        //public override string JobTitle { get; set; } = string.Empty;
-
+        public List<string> Tags { get; set; }
         public GenderType Gender { get; set; }
         public SexualOrientationType SexualOrientation { get; set; }
         public BodyType Body { get; set; }

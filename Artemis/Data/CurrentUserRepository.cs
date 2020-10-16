@@ -61,6 +61,9 @@ namespace Artemis.Data
                 var update = Builders<CurrentUser>
                                 .Update.Push(e => e.Images, imageModel);
 
+                update = Builders<CurrentUser>
+                                .Update.Set(e => e.UpdatedOn, DateTime.Now);
+
                 var options = new FindOneAndUpdateOptions<CurrentUser>
                 {
                     ReturnDocument = ReturnDocument.After
@@ -89,6 +92,9 @@ namespace Artemis.Data
 
                 var update = Builders<CurrentUser>
                                 .Update.PullAll(e => e.Images, images);
+
+                update = Builders<CurrentUser>
+                                .Update.Set(e => e.UpdatedOn, DateTime.Now);
 
                 var options = new FindOneAndUpdateOptions<CurrentUser>
                 {

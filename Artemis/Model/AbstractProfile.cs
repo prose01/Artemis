@@ -9,6 +9,13 @@ namespace Artemis.Model
     [BsonKnownTypes(typeof(CurrentUser))]
     public abstract class AbstractProfile
     {
+        #region special properties
+        [MaxLength(10)]
+        public abstract Dictionary<string, DateTime> Visited { get; set; }
+        [MaxLength(10)]
+        public abstract Dictionary<string, DateTime> IsBookmarked { get; set; }
+        #endregion
+
         [BsonId]
         public abstract ObjectId _id { get; set; }
         public abstract string Auth0Id { get; set; }
@@ -25,7 +32,7 @@ namespace Artemis.Model
         [DataType(DataType.DateTime)]
         public abstract DateTime LastActive { get; set; }
 
-        [Range(0, 120)]
+        [Range(16, 120)]
         public abstract int? Age { get; set; }
 
         [Range(0, 250)]
@@ -52,6 +59,9 @@ namespace Artemis.Model
         [BsonRepresentation(BsonType.String)]
         public abstract SmokingHabitsType SmokingHabits { get; set; }
 
+        //[BsonRepresentation(BsonType.String)]  // Maybe not
+        //public abstract AllergiesType Allergies { get; set; }
+
         public abstract HasChildrenType HasChildren { get; set; }
 
         public abstract WantChildrenType WantChildren { get; set; }
@@ -59,7 +69,7 @@ namespace Artemis.Model
         public abstract HasPetsType HasPets { get; set; }
 
         [BsonRepresentation(BsonType.String)]
-        public abstract LocationType LivesIn { get; set; }
+        public abstract LivesInType LivesIn { get; set; }
 
         [BsonRepresentation(BsonType.String)]
         public abstract EducationType Education { get; set; }
@@ -69,6 +79,18 @@ namespace Artemis.Model
 
         [BsonRepresentation(BsonType.String)]
         public abstract EmploymentStatusType EmploymentStatus { get; set; }
+
+        //[BsonRepresentation(BsonType.String)]
+        //public abstract EmploymentAreaType EmploymentArea { get; set; }
+
+        //[BsonRepresentation(BsonType.String)]
+        //public abstract EmploymentLevelType EmploymentLevel { get; set; }
+
+        //[BsonRepresentation(BsonType.String)] //Maybe not
+        //public abstract PoliticalOrientationType PoliticalOrientation { get; set; }
+
+        //[BsonRepresentation(BsonType.String)] //Maybe not
+        //public abstract ReligiousOrientationType ReligiousOrientation { get; set; }
 
         [BsonRepresentation(BsonType.String)]
         public abstract SportsActivityType SportsActivity { get; set; }

@@ -59,10 +59,8 @@ namespace Artemis.Data
                                 .Filter.Eq(e => e.ProfileId, currentUser.ProfileId);
 
                 var update = Builders<CurrentUser>
-                                .Update.Push(e => e.Images, imageModel);
-
-                update = Builders<CurrentUser>
-                                .Update.Set(e => e.UpdatedOn, DateTime.Now);
+                                .Update.Push(e => e.Images, imageModel)
+                                .Set(e => e.UpdatedOn, DateTime.Now);
 
                 var options = new FindOneAndUpdateOptions<CurrentUser>
                 {
@@ -91,10 +89,8 @@ namespace Artemis.Data
                                 .Filter.Eq(e => e.ProfileId, currentUser.ProfileId);
 
                 var update = Builders<CurrentUser>
-                                .Update.PullAll(e => e.Images, images);
-
-                update = Builders<CurrentUser>
-                                .Update.Set(e => e.UpdatedOn, DateTime.Now);
+                                .Update.PullAll(e => e.Images, images)
+                                .Set(e => e.UpdatedOn, DateTime.Now);
 
                 var options = new FindOneAndUpdateOptions<CurrentUser>
                 {

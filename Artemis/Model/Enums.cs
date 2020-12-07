@@ -1,5 +1,11 @@
 ﻿namespace Artemis.Model
 {
+    //public enum AllergiesType  // Boolean
+    //{
+    //    Yes,
+    //    No
+    //}
+
     public enum ClotheStyleType
     {
         NotChosen,
@@ -65,6 +71,17 @@
         University,
         Other
     }
+    //public enum EmploymentLevelType
+    //{
+    //    NotChosen,
+    //    Other
+    //}
+
+    //public enum EmploymentAreaType
+    //{
+    //    NotChosen,
+    //    Other
+    //}
 
     public enum EmploymentStatusType
     {
@@ -99,7 +116,7 @@
         Other
     }
 
-    public enum LocationType
+    public enum LivesInType
     {
         NotChosen,
         City,
@@ -107,6 +124,14 @@
         Countryside,
         Other
     }
+
+    //public enum PoliticalOrientationType
+    //{
+    //}
+
+    //public enum ReligiousOrientationType
+    //{
+    //}
 
     public enum SexualOrientationType
     {
@@ -143,5 +168,14 @@
         Separated,
         Divorced,
         Other
+    }
+
+
+    // Enum types used for other stuff than Profiles.
+    public enum OrderByType
+    {
+        CreatedOn,
+        UpdatedOn,
+        LastActive
     }
 }

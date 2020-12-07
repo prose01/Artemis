@@ -50,9 +50,9 @@ namespace Artemis
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-            // Add SignalR.
-            services
-                .AddSignalR();
+            //// Add SignalR.
+            //services
+            //    .AddSignalR();
 
             // Add authentication.
             string domain = $"https://{Configuration["Auth0:Domain"]}/";
@@ -66,23 +66,23 @@ namespace Artemis
                 options.Authority = domain;
                 options.Audience = Configuration["Auth0:ApiIdentifier"];
 
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        var accessToken = context.Request.Query["access_token"];
+                //options.Events = new JwtBearerEvents
+                //{
+                //    OnMessageReceived = context =>
+                //    {
+                //        var accessToken = context.Request.Query["access_token"];
 
-                        // If the request is for our hub...
-                        var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/chatHub")))
-                        {
-                            // Read the token out of the query string
-                            context.Token = accessToken;
-                        }
-                        return Task.CompletedTask;
-                    }
-                };
+                //        // If the request is for our hub...
+                //        var path = context.HttpContext.Request.Path;
+                //        if (!string.IsNullOrEmpty(accessToken) &&
+                //            (path.StartsWithSegments("/chatHub")))
+                //        {
+                //            // Read the token out of the query string
+                //            context.Token = accessToken;
+                //        }
+                //        return Task.CompletedTask;
+                //    }
+                //};
             });
 
             // register the scope authorization handler

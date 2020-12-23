@@ -12,10 +12,12 @@ namespace Artemis
     public class ImageUtil : IImageUtil
     {
         private readonly ICurrentUserRepository _profileRepository;
+        private readonly string _imagePath;
         private readonly long _fileSizeLimit;
 
         public ImageUtil(IConfiguration config, ICurrentUserRepository profileRepository)
         {
+            _imagePath = config.GetValue<string>("ImagePath");
             _fileSizeLimit = config.GetValue<long>("FileSizeLimit");
             _profileRepository = profileRepository;
         }
@@ -44,12 +46,12 @@ namespace Artemis
                 var fileName = randomFileName.Split('.');
 
                 // TODO: Find a place for you files!
-                if (!Directory.Exists($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}"))
+                if (!Directory.Exists(_imagePath + currentUser.ProfileId))
                 {
-                    Directory.CreateDirectory($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}");
+                    Directory.CreateDirectory(_imagePath + currentUser.ProfileId);
                 }
 
-                using (var filestream = File.Create($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}/{fileName[0]}.png"))
+                using (var filestream = File.Create(_imagePath + currentUser.ProfileId + "/" + fileName[0] + ".png"))
                 {
                     await image.CopyToAsync(filestream);
                     filestream.Flush();
@@ -78,9 +80,9 @@ namespace Artemis
                     if (imageModel != null)
                     {
                         // TODO: Find a place for you files!
-                        if (File.Exists($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}/{imageModel.FileName}.png"))
+                        if (File.Exists(_imagePath + currentUser.ProfileId + "/" + imageModel.FileName + ".png"))
                         {
-                            File.Delete($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}/{imageModel.FileName}.png");
+                            File.Delete(_imagePath + currentUser.ProfileId + "/" + imageModel.FileName + ".png");
                         }
 
                         // Remove image reference in database.
@@ -106,9 +108,9 @@ namespace Artemis
                 byte[] result;
 
                 // TODO: Find a place for you files!
-                if (Directory.Exists($"C:/Peter Rose - Private/Photos/123"))
+                if (Directory.Exists(_imagePath + profileId))
                 {
-                    var files = Directory.GetFiles($"C:/Peter Rose - Private/Photos/123/");
+                    var files = Directory.GetFiles(_imagePath + profileId + "/");
 
                     foreach (var file in files)
                     {
@@ -139,11 +141,11 @@ namespace Artemis
             try
             {
                 // TODO: Find a place for you files!
-                if (File.Exists($"C:/Peter Rose - Private/Photos/{profileId}/{fileName}.png"))
+                if (File.Exists(_imagePath + profileId + "/" + fileName +".png"))
                 {
                     byte[] result;
 
-                    using (FileStream stream = File.Open($"C:/Peter Rose - Private/Photos/{profileId}/{fileName}.png", FileMode.Open))
+                    using (FileStream stream = File.Open(_imagePath + profileId + "/" + fileName + ".png", FileMode.Open))
                     {
                         result = new byte[stream.Length];
                         await stream.ReadAsync(result, 0, (int)stream.Length);
@@ -171,9 +173,9 @@ namespace Artemis
             try
             {
                 // TODO: Find a place for you files!
-                //if (Directory.Exists($"C:/Peter Rose - Private/Photos/{profileId}"))
+                //if (Directory.Exists(_imagePath + profileId))
                 //{
-                //    Directory.Delete($"C:/Peter Rose - Private/Photos/{profileId}", true);
+                //    Directory.Delete(_imagePath + profileId, true);
                 //}
             }
             catch (Exception ex)
@@ -189,9 +191,9 @@ namespace Artemis
             try
             {
                 // TODO: Find a place for you files!
-                //if (Directory.Exists($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}"))
+                //if (Directory.Exists((_imagePath + currentUser.ProfileId))
                 //{
-                //    Directory.Delete($"C:/Peter Rose - Private/Photos/{currentUser.ProfileId}", true);
+                //    Directory.Delete(_imagePath + currentUser.ProfileId, true);
                 //}
             }
             catch (Exception ex)

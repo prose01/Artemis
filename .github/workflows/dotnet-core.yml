@@ -1,8 +1,6 @@
 name: Artemis Build & Deploy
 
-on:
-  push:
-    branches: [ Development ]
+on: workflow_dispatch
     
 env:
     AZURE_WEBAPP_NAME: Artemis-FreeTrail    # set this to your application's name

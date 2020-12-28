@@ -11,7 +11,7 @@ namespace Artemis.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class ImageUtilController : Controller
     {

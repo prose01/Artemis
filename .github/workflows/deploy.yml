@@ -37,12 +37,12 @@ jobs:
           run: dotnet test --no-restore --verbosity normal
       
     # Deploy to Azure Web apps    
-    #deploy:
+    deploy:
      #   needs: build
-      #  name: Deploy App
+        name: Deploy App
        # runs-on: ubuntu-latest
     
-        #steps:
+        steps:
         - name: 'Run Azure webapp deploy action using publish profile credentials'
           uses: azure/webapps-deploy@v2
           with: 

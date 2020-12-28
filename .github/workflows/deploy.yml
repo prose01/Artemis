@@ -30,7 +30,7 @@ jobs:
         - name: Build
           run: dotnet build --configuration Release --no-restore
         - name: Publish
-          run: dotnet publish -c '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/artemis'
+          run: dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/artemis'
           
         # Run Tests
         - name: Test

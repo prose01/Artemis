@@ -1,0 +1,59 @@
+name: Artemis Build & Deploy to Production
+
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Deploying Artemis to Production'
+        # Default value if no value is explicitly provided
+        default: 'Deploying to Production'
+        # Input has to be provided for the workflow to run
+        required: true
+    
+env:
+    AZURE_WEBAPP_NAME: Artemis-FreeTrail    # set this to your application's name
+    AZURE_WEBAPP_PACKAGE_PATH: '.'          # set this to the path to your web app project, defaults to the repository root
+    DOTNET_VERSION: '5.0.100'               # set this to the dot net version to use
+
+jobs:
+    build:
+        name: Build Code
+        runs-on: ubuntu-latest
+
+        steps:
+        # Checkout the repo
+        - uses: actions/checkout@v2
+        
+        # Setup .NET Core SDK
+        - name: Setup .NET Core
+          uses: actions/setup-dotnet@v1
+          with:
+            dotnet-version: ${{ env.DOTNET_VERSION }}
+            
+        # Run dotnet build and publish
+        - name: Install dependencies
+          run: dotnet restore
+        - name: Build
+          run: dotnet build --configuration Release --no-restore
+        - name: Publish
+          run: dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/artemis'
+          
+        # Run Tests
+        - name: Test
+          run: dotnet test --no-restore --verbosity normal
+      
+    # Deploy to Azure Web apps    
+    deploy:
+        needs: build
+        name: Deploy App
+        runs-on: ubuntu-latest
+    
+        steps:
+        - name: 'Run Azure webapp deploy action using publish profile credentials'
+          uses: azure/webapps-deploy@v2
+          with: 
+            app-name: ${{ env.AZURE_WEBAPP_NAME }}
+            publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
+            package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/artemis'

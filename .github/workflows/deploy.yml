@@ -33,14 +33,14 @@ jobs:
           run: dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/artemis'
           
         # Run Tests
-        - name: Test
-          run: dotnet test --no-restore --verbosity normal
+       # - name: Test
+       #   run: dotnet test --no-restore --verbosity normal
       
     # Deploy to Azure Web apps    
     deploy:
         needs: build
         name: Deploy App
-        runs-on: ubuntu-latest
+        #runs-on: ubuntu-latest
     
         steps:
         - name: 'Run Azure webapp deploy action using publish profile credentials'

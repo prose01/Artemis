@@ -1,16 +1,8 @@
 name: Artemis Build & Deploy to Production
 
 on:
-  workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Deploying Artemis to Production'
-        # Default value if no value is explicitly provided
-        default: 'Deploying to Production'
-        # Input has to be provided for the workflow to run
-        required: true
+  push:
+    branches: [ Development ]
     
 env:
     AZURE_WEBAPP_NAME: Artemis-FreeTrail    # set this to your application's name

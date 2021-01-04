@@ -93,6 +93,7 @@ namespace Artemis
 
             // Add our helper method(s)
             services.AddSingleton<IHelperMethods, HelperMethods>();
+            services.AddSingleton<IAzureBlobStorage, AzureBlobStorage>();
             services.AddSingleton<IImageUtil, ImageUtil>();
 
             // Register the Swagger generator, defining one or more Swagger documents

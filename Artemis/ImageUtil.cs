@@ -11,14 +11,14 @@ namespace Artemis
 {
     public class ImageUtil : IImageUtil
     {
+        private readonly IAzureBlobStorage _azureBlobStorage;
         private readonly ICurrentUserRepository _profileRepository;
-        private readonly string _imagePath;
         private readonly long _fileSizeLimit;
 
-        public ImageUtil(IConfiguration config, ICurrentUserRepository profileRepository)
+        public ImageUtil(IConfiguration config, IAzureBlobStorage azureBlobStorage, ICurrentUserRepository profileRepository)
         {
-            _imagePath = config.GetValue<string>("ImagePath");
             _fileSizeLimit = config.GetValue<long>("FileSizeLimit");
+            _azureBlobStorage = azureBlobStorage;
             _profileRepository = profileRepository;
         }
 
@@ -45,17 +45,23 @@ namespace Artemis
                 var randomFileName = Path.GetRandomFileName();
                 var fileName = randomFileName.Split('.');
 
-                // TODO: Find a place for you files!
-                if (!Directory.Exists(_imagePath + currentUser.ProfileId))
+
+                using (var stream = image.OpenReadStream())
                 {
-                    Directory.CreateDirectory(_imagePath + currentUser.ProfileId);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0], stream);
                 }
 
-                using (var filestream = File.Create(_imagePath + currentUser.ProfileId + "/" + fileName[0] + ".png"))
-                {
-                    await image.CopyToAsync(filestream);
-                    filestream.Flush();
-                }
+                //// Old way of storing files locally.
+                //if (!Directory.Exists(_imagePath + currentUser.ProfileId))
+                //{
+                //    Directory.CreateDirectory(_imagePath + currentUser.ProfileId);
+                //}
+
+                //using (var filestream = File.Create(_imagePath + currentUser.ProfileId + "/" + fileName[0] + ".png"))
+                //{
+                //    await image.CopyToAsync(filestream);
+                //    filestream.Flush();
+                //}
 
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.
                 await _profileRepository.AddImageToCurrentUser(currentUser, fileName[0], title);
@@ -79,11 +85,13 @@ namespace Artemis
 
                     if (imageModel != null)
                     {
-                        // TODO: Find a place for you files!
-                        if (File.Exists(_imagePath + currentUser.ProfileId + "/" + imageModel.FileName + ".png"))
-                        {
-                            File.Delete(_imagePath + currentUser.ProfileId + "/" + imageModel.FileName + ".png");
-                        }
+                        await _azureBlobStorage.DeleteImageByFileNameAsync(currentUser.ProfileId, imageModel.FileName);
+
+                        //// TODO: Find a place for you files!
+                        //if (File.Exists(_imagePath + currentUser.ProfileId + "/" + imageModel.FileName + ".png"))
+                        //{
+                        //    File.Delete(_imagePath + currentUser.ProfileId + "/" + imageModel.FileName + ".png");
+                        //}
 
                         // Remove image reference in database.
                         await _profileRepository.RemoveImageFromCurrentUser(currentUser, imageId);
@@ -105,24 +113,36 @@ namespace Artemis
 
             try
             {
-                byte[] result;
+                List<Stream> streams = await _azureBlobStorage.DownloadAllImagesAsync("123");
 
-                // TODO: Find a place for you files!
-                if (Directory.Exists(_imagePath + profileId))
+                foreach (var stream in streams)
                 {
-                    var files = Directory.GetFiles(_imagePath + profileId + "/");
-
-                    foreach (var file in files)
+                    using (MemoryStream ms = new MemoryStream())
                     {
-                        using (FileStream stream = File.Open(file, FileMode.Open))
-                        {
-                            result = new byte[stream.Length];
-                            await stream.ReadAsync(result, 0, (int)stream.Length);
-                        }
-
-                        images.Add(result);
+                        stream.CopyTo(ms);
+                        images.Add(ms.ToArray());
                     }
                 }
+
+
+                //byte[] result;
+
+                //// TODO: Find a place for you files!
+                //if (Directory.Exists(_imagePath + profileId))
+                //{
+                //    var files = Directory.GetFiles(_imagePath + profileId + "/");
+
+                //    foreach (var file in files)
+                //    {
+                //        using (FileStream stream = File.Open(file, FileMode.Open))
+                //        {
+                //            result = new byte[stream.Length];
+                //            await stream.ReadAsync(result, 0, (int)stream.Length);
+                //        }
+
+                //        images.Add(result);
+                //    }
+                //}
 
                 return images;
             }
@@ -140,21 +160,39 @@ namespace Artemis
         {
             try
             {
-                // TODO: Find a place for you files!
-                if (File.Exists(_imagePath + profileId + "/" + fileName +".png"))
+                //byte[] result;
+
+                //using (Stream stream = await _azureBlobStorage.DownloadImageByFileNameAsync("123", "kgu5wb02"))
+                //{
+                //    result = new byte[stream.Length];
+                //    await stream.ReadAsync(result, 0, (int)stream.Length);
+                //}
+
+                Stream stream = await _azureBlobStorage.DownloadImageByFileNameAsync("123", "kgu5wb02");
+
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    byte[] result;
-
-                    using (FileStream stream = File.Open(_imagePath + profileId + "/" + fileName + ".png", FileMode.Open))
-                    {
-                        result = new byte[stream.Length];
-                        await stream.ReadAsync(result, 0, (int)stream.Length);
-                    }
-
-                    return result;
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
                 }
 
-                return null; // TODO: Should return exception or error
+                //return result;
+
+                // TODO: Find a place for you files!
+                //if (File.Exists(_imagePath + profileId + "/" + fileName +".png"))
+                //{
+                //    byte[] result;
+
+                //    using (FileStream stream = File.Open(_imagePath + profileId + "/" + fileName + ".png", FileMode.Open))
+                //    {
+                //        result = new byte[stream.Length];
+                //        await stream.ReadAsync(result, 0, (int)stream.Length);
+                //    }
+
+                //    return result;
+                //}
+
+                //return null; // TODO: Should return exception or error
             }
             catch (Exception ex)
             {
@@ -172,6 +210,8 @@ namespace Artemis
 
             try
             {
+                _azureBlobStorage.DeleteAllImagesAsync("123");
+
                 // TODO: Find a place for you files!
                 //if (Directory.Exists(_imagePath + profileId))
                 //{
@@ -190,6 +230,8 @@ namespace Artemis
         {
             try
             {
+                _azureBlobStorage.DeleteAllImagesAsync("123");
+
                 // TODO: Find a place for you files!
                 //if (Directory.Exists((_imagePath + currentUser.ProfileId))
                 //{

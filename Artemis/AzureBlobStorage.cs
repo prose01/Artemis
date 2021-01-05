@@ -19,7 +19,7 @@ namespace Artemis
 
         public AzureBlobStorage(IConfiguration config)
         {
-            _connectionString = config.GetValue<string>("Storage-ConnectionString");
+            _connectionString = config.GetValue<string>("Storage_ConnectionString");
             _container = new BlobContainerClient(_connectionString, "photos");
         }
 

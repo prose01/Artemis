@@ -55,7 +55,7 @@ namespace Artemis
             //    .AddSignalR();
 
             // Add authentication.
-            string domain = $"https://bluepenguin.eu.auth0.com/";
+            string domain = $"https://{Configuration["Auth0-Domain"]}/";
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -64,7 +64,7 @@ namespace Artemis
             }).AddJwtBearer(options =>
             {
                 options.Authority = domain;
-                options.Audience = "https://bluepenguin.eu.auth0.com/api/v2/";
+                options.Audience = Configuration["Auth0-ApiIdentifier"];
 
                 //options.Events = new JwtBearerEvents
                 //{
@@ -130,9 +130,9 @@ namespace Artemis
 
             services.Configure<Settings>(options =>
             {
-                options.ConnectionString = "mongodb://peterrose03:hansen03£@cluster0-shard-00-00-jnznz.mongodb.net:27017,cluster0-shard-00-01-jnznz.mongodb.net:27017,cluster0-shard-00-02-jnznz.mongodb.net:27017/Avalon?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin";
-                options.Database = "Avalon";
-                options.Auth0Id = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+                options.ConnectionString = Configuration.GetSection("Mongo-ConnectionString").Value;
+                options.Database = Configuration.GetSection("Mongo-Database").Value;
+                options.Auth0Id = Configuration.GetSection("Auth0-Claims-nameidentifier").Value;
             });
 
             services.AddControllers();

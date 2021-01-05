@@ -1,5 +1,4 @@
 ﻿using Artemis.Interfaces;
-using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Artemis
 {
+    // Got most of the code from Azure Storage Blobs client library for .NET
+    // https://github.com/Azure/azure-sdk-for-net/blob/Azure.Storage.Blobs_12.7.0/sdk/storage/Azure.Storage.Blobs/README.md
+
     public class AzureBlobStorage : IAzureBlobStorage
     {
         private readonly string _connectionString;
@@ -23,35 +25,14 @@ namespace Artemis
 
         public async Task UploadAsync(string profileId, string fileName, Stream fileStream)
         {
-            // Get a reference to a container or then create it
-            //BlobContainerClient container = new BlobContainerClient(_connectionString, "photos");
-            await _container.CreateIfNotExistsAsync();
-
             try
             {
-                // Get a reference to a blob
-                BlobClient blob = _container.GetBlobClient(profileId);
-
-                // Upload data to blob storage
-                //await blob.UploadAsync(fileStream);
-                //_container.UploadBlobAsync(fileName, fileStream);
-
-                //// Open the file and upload its data
-                //using (var filestream = File.Create(profileIdPath + "/" + fileName + ".png"))
-                //{
-                //    await blob.UploadAsync(fileStream);
-                //    filestream.Flush();
-                //}
+                _container.UploadBlobAsync(Path.Combine(profileId, fileName + ".png"), fileStream);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            //finally
-            //{
-            //    // Clean up after we're finished
-            //    await container.DeleteAsync();
-            //}
         }
 
         public async Task<Stream> DownloadImageByFileNameAsync(string profileId, string fileName)
@@ -96,48 +77,23 @@ namespace Artemis
             {
                 List<Stream> streams = new List<Stream>();
 
-                return await this.ListBlobsHierarchicalListing(profileId, streams);
+                // Get a reference to a blob
+                var blobItems = _container.GetBlobsAsync(prefix: profileId);
 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        private async Task<List<Stream>> ListBlobsHierarchicalListing(string prefix, List<Stream> streams)
-        {
-            try
-            {
-                // Call the listing operation and return pages of the specified size.
-                var resultSegment = _container.GetBlobsByHierarchyAsync(prefix: prefix, delimiter: "/")
-                    .AsPages(default, 10);
-
-                // Enumerate the blobs returned for each page.
-                await foreach (Azure.Page<BlobHierarchyItem> blobPage in resultSegment)
+                // Get everything Async
+                await foreach (BlobItem blobItem in blobItems)
                 {
-                    // A hierarchical listing may return both virtual directories and blobs.
-                    foreach (BlobHierarchyItem blobhierarchyItem in blobPage.Values)
-                    {
-                        if (blobhierarchyItem.IsPrefix)
-                        {
-                            // Call recursively with the prefix to traverse the virtual directory.
-                            await ListBlobsHierarchicalListing(blobhierarchyItem.Prefix, streams);
-                        }
-                        else
-                        {
-                            BlobClient blobitem = _container.GetBlobClient(blobhierarchyItem.Blob.Name);
+                    BlobClient blobClient = _container.GetBlobClient(blobItem.Name);
 
-                            // Download the blob's contents and add it to list
-                            BlobDownloadInfo download = await blobitem.DownloadAsync();
-                            streams.Add(download.Content);
-                        }
-                    }
+                    // Download the blob's contents and add it to list
+                    BlobDownloadInfo download = await blobClient.DownloadAsync();
+                    streams.Add(download.Content);
                 }
 
                 return streams;
+
             }
-            catch (RequestFailedException ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -148,10 +104,14 @@ namespace Artemis
             try
             {
                 // Get a reference to a blob
-                BlobClient blob = _container.GetBlobClient(profileId);
+                var blobItems = _container.GetBlobsAsync(prefix: profileId);
 
-                // DeleteAsync
-                await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
+                // Delete everything Async
+                await foreach (BlobItem blobItem in blobItems)
+                {
+                    BlobClient blobClient = _container.GetBlobClient(blobItem.Name);
+                    await blobClient.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
+                }
 
             }
             catch (Exception ex)
@@ -159,5 +119,43 @@ namespace Artemis
                 throw ex;
             }
         }
+
+        //private async Task<List<Stream>> ListBlobsHierarchicalListing(string prefix, List<Stream> streams)
+        //{
+        //    try
+        //    {
+        //        // Call the listing operation and return pages of the specified size.
+        //        var resultSegment = _container.GetBlobsByHierarchyAsync(prefix: prefix, delimiter: "/")
+        //            .AsPages(default, 10);
+
+        //        // Enumerate the blobs returned for each page.
+        //        await foreach (Azure.Page<BlobHierarchyItem> blobPage in resultSegment)
+        //        {
+        //            // A hierarchical listing may return both virtual directories and blobs.
+        //            foreach (BlobHierarchyItem blobhierarchyItem in blobPage.Values)
+        //            {
+        //                if (blobhierarchyItem.IsPrefix)
+        //                {
+        //                    // Call recursively with the prefix to traverse the virtual directory.
+        //                    await ListBlobsHierarchicalListing(blobhierarchyItem.Prefix, streams);
+        //                }
+        //                else
+        //                {
+        //                    BlobClient blobitem = _container.GetBlobClient(blobhierarchyItem.Blob.Name);
+
+        //                    // Download the blob's contents and add it to list
+        //                    BlobDownloadInfo download = await blobitem.DownloadAsync();
+        //                    streams.Add(download.Content);
+        //                }
+        //            }
+        //        }
+
+        //        return streams;
+        //    }
+        //    catch (RequestFailedException ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
     }
 }

@@ -27,7 +27,7 @@ namespace Artemis
         {
             try
             {
-                _container.UploadBlobAsync(Path.Combine(profileId, fileName + ".png"), fileStream);
+                _container.UploadBlobAsync(Path.Combine(profileId, fileName + ".jpeg"), fileStream);
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace Artemis
             try
             {
                 // Get a reference to a blob
-                BlobClient blob = _container.GetBlobClient(Path.Combine(profileId, fileName + ".png"));
+                BlobClient blob = _container.GetBlobClient(Path.Combine(profileId, fileName + ".jpeg"));
 
                 // Download the blob's contents and save it to a file
                 BlobDownloadInfo download = await blob.DownloadAsync();
@@ -59,7 +59,7 @@ namespace Artemis
             try
             {
                 // Get a reference to a blob
-                BlobClient blob = _container.GetBlobClient(Path.Combine(profileId, fileName + ".png"));
+                BlobClient blob = _container.GetBlobClient(Path.Combine(profileId, fileName + ".jpeg"));
 
                 // DeleteAsync
                 await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);

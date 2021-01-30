@@ -68,7 +68,7 @@ namespace Artemis.Controllers
 
                 foreach (var imageId in imageIds)
                 {
-                    if (!currentUser.Images.Any(i => i.ImageId != imageId)) return BadRequest();
+                    if (!currentUser.Images.Any(i => i.ImageId == imageId)) return BadRequest();
                 }
 
                 return Ok(_imageUtil.DeleteImagesFromCurrentUser(currentUser, imageIds));

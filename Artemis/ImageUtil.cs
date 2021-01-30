@@ -34,11 +34,11 @@ namespace Artemis
         {
             try
             {
-                if (image.Length < 0 || image.Length > _fileSizeLimit)
-                {
-                    // TODO: Find på noget bedre end en exception når den fejler fx. pga. file size.
-                    throw new Exception();
-                }
+                //if (image.Length < 0 || image.Length > _fileSizeLimit)
+                //{
+                //    // TODO: Find på noget bedre end en exception når den fejler fx. pga. file size.
+                //    throw new Exception();
+                //}
 
                 // TODO: Scan files for virus!!!!!
 

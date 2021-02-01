@@ -27,7 +27,7 @@ namespace Artemis
         {
             try
             {
-                _container.UploadBlobAsync(Path.Combine(profileId, fileName + ".jpeg"), fileStream);
+                _container.UploadBlobAsync(Path.Combine(profileId, fileName + ".png"), fileStream);
             }
             catch (Exception ex)
             {

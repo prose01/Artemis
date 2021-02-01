@@ -7,7 +7,7 @@ namespace Artemis.Interfaces
 {
     public interface IImageUtil
     {
-        Task<Task<Azure.Response<Azure.Storage.Blobs.Models.BlobContentInfo>>> AddImageToCurrentUser(CurrentUser currentUser, IFormFile photo, string title);
+        Task AddImageToCurrentUser(CurrentUser currentUser, IFormFile photo, string title);
         Task DeleteImagesFromCurrentUser(CurrentUser currentUser, string[] imageIds);
         Task<List<byte[]>> GetImagesAsync(string profileId);
         Task<byte[]> GetImageByFileName(string profileId, string fileName);

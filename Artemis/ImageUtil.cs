@@ -30,7 +30,7 @@ namespace Artemis
         /// <param name="image">The image.</param>
         /// <param name="title">The title.</param>
         /// <exception cref="Exception"></exception>
-        public async Task<Task<Azure.Response<Azure.Storage.Blobs.Models.BlobContentInfo>>> AddImageToCurrentUser(CurrentUser currentUser, IFormFile image, string title)
+        public async Task AddImageToCurrentUser(CurrentUser currentUser, IFormFile image, string title)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace Artemis
 
                 using (var stream = image.OpenReadStream())
                 {
-                    return await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0], stream);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0], stream);
                 }
 
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.

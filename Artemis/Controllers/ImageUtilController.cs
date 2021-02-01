@@ -1,9 +1,11 @@
 ﻿using Artemis.Interfaces;
+using Artemis.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,17 +36,33 @@ namespace Artemis.Controllers
         /// <exception cref="ArgumentException">ModelState is not valid {ModelState.IsValid}. - image</exception>
         /// <exception cref="ArgumentException">Image length is < 1 {image.Length}. - image</exception>
         [HttpPost("~/UploadImage")]
-        public async Task<IActionResult> UploadImage([FromForm] IFormFile image, [FromForm] string title)
+        public async Task<IActionResult> UploadImage([FromForm] UploadImageModel imagemodel)
         {
-            if (image.Length < 0) throw new ArgumentException($"Image length is < 1 {image.Length}.", nameof(image));
-            if (string.IsNullOrEmpty(title)) throw new ArgumentException($"Image must have a title.", nameof(title));
+            //if (image.Length < 0) throw new ArgumentException($"Image length is < 1 {image.Length}.", nameof(image));
+            //if (string.IsNullOrEmpty(title)) throw new ArgumentException($"Image must have a title.", nameof(title));
 
             try
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
-                if (currentUser.Images.Count >= _maxImageNumber) return BadRequest();
+                //if (currentUser.Images.Count >= _maxImageNumber) return BadRequest();
 
+                //return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
+
+                // Getting Name
+                string title = imagemodel.Title;
+
+                // Getting Image
+                var image = imagemodel.Image;
+
+                // Saving Image on Server
+                if (image.Length > 0)
+                {
+                    using (var fileStream = new FileStream(image.FileName, FileMode.Create))
+                    {
+                        image.CopyTo(fileStream);
+                    }
+                }
                 return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
             }
             catch (Exception ex)

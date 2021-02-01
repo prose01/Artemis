@@ -45,7 +45,7 @@ namespace Artemis.Controllers
 
                 if (currentUser.Images.Count >= _maxImageNumber) return BadRequest();
 
-                return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
+                return (IActionResult)_imageUtil.AddImageToCurrentUser(currentUser, image, title);
             }
             catch (Exception ex)
             {

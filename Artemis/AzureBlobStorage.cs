@@ -23,11 +23,11 @@ namespace Artemis
             _container = new BlobContainerClient(_connectionString, "photos");
         }
 
-        public async Task UploadAsync(string profileId, string fileName, Stream fileStream)
+        public async Task<Task<Azure.Response<BlobContentInfo>>> UploadAsync(string profileId, string fileName, Stream fileStream)
         {
             try
             {
-                _container.UploadBlobAsync(Path.Combine(profileId, fileName + ".png"), fileStream);
+                return _container.UploadBlobAsync(Path.Combine(profileId, fileName + ".jpeg"), fileStream);
             }
             catch (Exception ex)
             {

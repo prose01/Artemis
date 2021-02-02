@@ -58,12 +58,15 @@ namespace Artemis.Controllers
                 // Saving Image on Server
                 if (image.Length > 0)
                 {
-                    using (var fileStream = new FileStream(image.FileName, FileMode.Create))
-                    {
-                        image.CopyTo(fileStream);
-                    }
+                    //using (var fileStream = new FileStream(image.FileName, FileMode.Create))
+                    //{
+                    //    image.CopyTo(fileStream);
+                    //}
+
+                    return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
                 }
-                return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
+
+                return BadRequest();
             }
             catch (Exception ex)
             {

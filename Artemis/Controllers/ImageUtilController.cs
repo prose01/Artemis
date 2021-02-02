@@ -31,42 +31,22 @@ namespace Artemis.Controllers
         #region CurrentUser
 
         /// <summary>Upload images to the profile image folder.</summary>
-        /// <param name="image"></param>
-        /// <param name="title"></param>
-        /// <exception cref="ArgumentException">ModelState is not valid {ModelState.IsValid}. - image</exception>
-        /// <exception cref="ArgumentException">Image length is < 1 {image.Length}. - image</exception>
+        /// <param name="imagemodel"></param>
+        /// <exception cref="ArgumentException">Image length is < 1 {imagemodel.Image.Length}. - image</exception>
+        /// <exception cref="ArgumentException">Image must have a title. - Title</exception>
         [HttpPost("~/UploadImage")]
         public async Task<IActionResult> UploadImage([FromForm] UploadImageModel imagemodel)
         {
-            //if (image.Length < 0) throw new ArgumentException($"Image length is < 1 {image.Length}.", nameof(image));
-            //if (string.IsNullOrEmpty(title)) throw new ArgumentException($"Image must have a title.", nameof(title));
+            if (imagemodel.Image.Length < 0) throw new ArgumentException($"Image length is < 1 {imagemodel.Image.Length}.", nameof(imagemodel.Image));
+            if (string.IsNullOrEmpty(imagemodel.Title)) throw new ArgumentException($"Image must have a title.", nameof(imagemodel.Title));
 
             try
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
-                //if (currentUser.Images.Count >= _maxImageNumber) return BadRequest();
+                if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
-                //return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
-
-                // Getting Name
-                string title = imagemodel.Title;
-
-                // Getting Image
-                var image = imagemodel.Image;
-
-                // Saving Image on Server
-                if (image.Length > 0)
-                {
-                    //using (var fileStream = new FileStream(image.FileName, FileMode.Create))
-                    //{
-                    //    image.CopyTo(fileStream);
-                    //}
-
-                    return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
-                }
-
-                return BadRequest();
+                return Ok(_imageUtil.AddImageToCurrentUser(currentUser, imagemodel.Image, imagemodel.Title));
             }
             catch (Exception ex)
             {

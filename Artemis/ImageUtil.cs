@@ -45,7 +45,7 @@ namespace Artemis
                 //var randomFileName = Path.GetRandomFileName();
                 //var fileName = randomFileName.Split('.');
 
-                await _azureBlobStorage.UploadAsync("123", "testng", new System.IO.MemoryStream());
+                await _azureBlobStorage.UploadAsync(currentUser.ProfileId, title, new System.IO.MemoryStream());
 
                 //using (var stream = image.OpenReadStream())
                 //{

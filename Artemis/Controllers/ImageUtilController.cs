@@ -46,10 +46,8 @@ namespace Artemis.Controllers
 
             try
             {
-                using (var fileStream = new FileStream(imagemodel.Image.FileName, FileMode.Open))
-                {
-                    _container.UploadBlobAsync(Path.Combine("123", "testing.jpeg"), fileStream);
-                }
+
+                _container.UploadBlobAsync(Path.Combine("123", "testing.jpeg"), new System.IO.MemoryStream());
 
 
                 //var currentUser = await _helper.GetCurrentUserProfile(User);

@@ -1,6 +1,5 @@
 ﻿using Artemis.Interfaces;
 using Artemis.Model;
-using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,15 +20,12 @@ namespace Artemis.Controllers
         private readonly IHelperMethods _helper;
         private readonly IImageUtil _imageUtil;
         private readonly long _maxImageNumber;
-        private readonly string _connectionString;
-        private readonly BlobContainerClient _container;
 
         public ImageUtilController(IConfiguration config, IHelperMethods helperMethods, IImageUtil imageUtil)
         {
             _maxImageNumber = config.GetValue<long>("MaxImageNumber");
             _helper = helperMethods;
             _imageUtil = imageUtil;
-            _container = new BlobContainerClient("DefaultEndpointsProtocol=https;AccountName=freetrail;AccountKey=2SXWzII86M6rZBiXWprJgXYPeQncxw4JICQrawu0IPlNC6cJo2TuHX/9YrwbH9krnGMcy+0mDD+0vpWPUqPODw==;EndpointSuffix=core.windows.net", "photos");
         }
 
         #region CurrentUser
@@ -39,23 +35,18 @@ namespace Artemis.Controllers
         /// <exception cref="ArgumentException">Image length is < 1 {imagemodel.Image.Length}. - image</exception>
         /// <exception cref="ArgumentException">Image must have a title. - Title</exception>
         [HttpPost("~/UploadImage")]
-        public async Task<IActionResult> UploadImage()
+        public async Task<IActionResult> UploadImage([FromForm] UploadImageModel imagemodel)
         {
-            //if (imagemodel.Image.Length < 0) throw new ArgumentException($"Image length is < 1 {imagemodel.Image.Length}.", nameof(imagemodel.Image));
-            //if (string.IsNullOrEmpty(imagemodel.Title)) throw new ArgumentException($"Image must have a title.", nameof(imagemodel.Title));
+            if (imagemodel.Image.Length < 0) throw new ArgumentException($"Image length is < 1 {imagemodel.Image.Length}.", nameof(imagemodel.Image));
+            if (string.IsNullOrEmpty(imagemodel.Title)) throw new ArgumentException($"Image must have a title.", nameof(imagemodel.Title));
 
             try
             {
+                var currentUser = await _helper.GetCurrentUserProfile(User);
 
-                _container.UploadBlobAsync(Path.Combine("123", "testing.jpeg"), new System.IO.MemoryStream());
+                if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
-
-                //var currentUser = await _helper.GetCurrentUserProfile(User);
-
-                //if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
-
-                //return Ok(_imageUtil.AddImageToCurrentUser(currentUser, imagemodel.Image, "testing"));
-                return Ok();
+                return Ok(_imageUtil.AddImageToCurrentUser(currentUser, imagemodel.Image, imagemodel.Title));
             }
             catch (Exception ex)
             {

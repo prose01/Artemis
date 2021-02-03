@@ -1,6 +1,7 @@
 ﻿using Artemis.Interfaces;
 using Artemis.Model;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -33,7 +34,7 @@ namespace Artemis.Controllers
         /// <exception cref="ArgumentException">Image length is < 1 {imagemodel.Image.Length}. - image</exception>
         /// <exception cref="ArgumentException">Image must have a title. - Title</exception>
         [HttpPost("~/UploadImage")]
-        public async Task<IActionResult> UploadImage([FromForm] UploadImageModel imagemodel)
+        public async Task<IActionResult> UploadImage([FromForm] IFormFile image, [FromForm] string title)
         {
             //if (imagemodel.Image.Length < 0) throw new ArgumentException($"Image length is < 1 {imagemodel.Image.Length}.", nameof(imagemodel.Image));
             //if (string.IsNullOrEmpty(imagemodel.Title)) throw new ArgumentException($"Image must have a title.", nameof(imagemodel.Title));
@@ -44,7 +45,7 @@ namespace Artemis.Controllers
 
                 //if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
-                return Ok(_imageUtil.AddImageToCurrentUser(currentUser, imagemodel.Image, imagemodel.Title));
+                return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
             }
             catch (Exception ex)
             {

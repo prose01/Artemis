@@ -45,14 +45,15 @@ namespace Artemis
                 //var randomFileName = Path.GetRandomFileName();
                 //var fileName = randomFileName.Split('.');
 
+                await _azureBlobStorage.UploadAsync("123", "testng", new System.IO.MemoryStream());
 
-                using (var stream = image.OpenReadStream())
-                {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, "testng", stream);
-                }
+                //using (var stream = image.OpenReadStream())
+                //{
+                //    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, "testng", stream);
+                //}
 
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.
-                await _profileRepository.AddImageToCurrentUser(currentUser, "testng", title);
+                //await _profileRepository.AddImageToCurrentUser(currentUser, "testng", title);
             }
             catch (Exception ex)
             {

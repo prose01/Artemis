@@ -18,7 +18,7 @@ namespace Artemis
 
         public AzureBlobStorage(IConfiguration config)
         {
-            _container = new BlobContainerClient("Storage_ConnectionString", "photos");
+            _container = new BlobContainerClient(config.GetValue<string>("Storage_ConnectionString"), "photos");
         }
 
         public async Task UploadAsync(string profileId, string fileName, Stream fileStream)

@@ -43,7 +43,7 @@ namespace Artemis.Controllers
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
-                //if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
+                if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
                 return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
             }

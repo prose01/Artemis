@@ -29,7 +29,7 @@ namespace Artemis.Controllers
             _maxImageNumber = config.GetValue<long>("MaxImageNumber");
             _helper = helperMethods;
             _imageUtil = imageUtil;
-            _container = new BlobContainerClient(_connectionString, "photos");
+            _container = new BlobContainerClient("DefaultEndpointsProtocol=https;AccountName=freetrail;AccountKey=2SXWzII86M6rZBiXWprJgXYPeQncxw4JICQrawu0IPlNC6cJo2TuHX/9YrwbH9krnGMcy+0mDD+0vpWPUqPODw==;EndpointSuffix=core.windows.net", "photos");
         }
 
         #region CurrentUser

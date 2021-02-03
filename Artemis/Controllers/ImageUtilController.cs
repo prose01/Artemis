@@ -39,7 +39,7 @@ namespace Artemis.Controllers
         /// <exception cref="ArgumentException">Image length is < 1 {imagemodel.Image.Length}. - image</exception>
         /// <exception cref="ArgumentException">Image must have a title. - Title</exception>
         [HttpPost("~/UploadImage")]
-        public async Task<IActionResult> UploadImage([FromForm] UploadImageModel imagemodel)
+        public async Task<IActionResult> UploadImage()
         {
             //if (imagemodel.Image.Length < 0) throw new ArgumentException($"Image length is < 1 {imagemodel.Image.Length}.", nameof(imagemodel.Image));
             //if (string.IsNullOrEmpty(imagemodel.Title)) throw new ArgumentException($"Image must have a title.", nameof(imagemodel.Title));

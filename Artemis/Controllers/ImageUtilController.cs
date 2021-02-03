@@ -50,7 +50,7 @@ namespace Artemis.Controllers
             }
             catch (Exception ex)
             {
-                return Problem(ex.ToString());
+                return (IActionResult)ex;
             }
         }
 

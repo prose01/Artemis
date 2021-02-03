@@ -46,7 +46,7 @@ namespace Artemis
                 var fileName = randomFileName.Split('.');
 
                 await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0], new System.IO.MemoryStream());
-                Console.WriteLine("Vi mig titlen! " + title);
+
                 //using (var stream = image.OpenReadStream())
                 //{
                 //    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0], stream);

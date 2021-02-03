@@ -45,7 +45,9 @@ namespace Artemis.Controllers
 
                 if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
-                return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
+                _imageUtil.AddImageToCurrentUser(currentUser, image, title);
+
+                return Ok();
             }
             catch (Exception ex)
             {

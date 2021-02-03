@@ -1,11 +1,9 @@
 ﻿using Artemis.Interfaces;
 using Artemis.Model;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 

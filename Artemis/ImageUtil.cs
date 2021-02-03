@@ -42,13 +42,18 @@ namespace Artemis
 
                 // TODO: Scan files for virus!!!!!
 
-                var randomFileName = Path.GetRandomFileName();
-                var fileName = randomFileName.Split('.');
+                //var randomFileName = Path.GetRandomFileName();
+                //var fileName = randomFileName.Split('.');
 
 
-                using (var stream = image.OpenReadStream())
+                //using (var stream = image.OpenReadStream())
+                //{
+                //    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0], stream);
+                //}
+
+                using (var fileStream = new FileStream(image.FileName, FileMode.Open))
                 {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0], stream);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, "testing", fileStream);
                 }
 
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.

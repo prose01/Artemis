@@ -1,5 +1,4 @@
 ﻿using Artemis.Interfaces;
-using Artemis.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -55,12 +54,12 @@ namespace Artemis.Controllers
             }
         }
 
-        /// <summary>Deletes the image from current user.</summary>
+        /// <summary>Deletes the image for current user.</summary>
         /// <param name="imageId">The image identifier.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">ModelState is not valid {ModelState.IsValid}. - imageId</exception>
-        [HttpPost("~/DeleteImage")]
-        public async Task<IActionResult> DeleteImage([FromBody] string[] imageIds)
+        [HttpPost("~/DeleteImagesForCurrentUser")]
+        public async Task<IActionResult> DeleteImagesForCurrentUser([FromBody] string[] imageIds)
         {
             //if (!ModelState.IsValid) throw new ArgumentException($"ModelState is not valid {ModelState.IsValid}.", nameof(imageIds)); unnecessary 
 
@@ -73,7 +72,7 @@ namespace Artemis.Controllers
                     if (!currentUser.Images.Any(i => i.ImageId == imageId)) return BadRequest();
                 }
 
-                return Ok(_imageUtil.DeleteImagesFromCurrentUser(currentUser, imageIds));
+                return Ok(_imageUtil.DeleteImagesForCurrentUser(currentUser, imageIds));
             }
             catch (Exception ex)
             {
@@ -84,22 +83,22 @@ namespace Artemis.Controllers
         /// <summary>Gets an images from CurrentUser by Image fileName.</summary>
         /// <param name="fileName">The image fileName.</param>
         /// <returns></returns>
-        [HttpGet("~/GetImageByFileName/{fileName}")]
-        public async Task<IActionResult> GetImageByFileName(string fileName)
-        {
-            try
-            {
-                var currentUser = await _helper.GetCurrentUserProfile(User);
+        //[HttpGet("~/GetImageByFileName/{fileName}")]
+        //public async Task<IActionResult> GetImageByFileName(string fileName)
+        //{
+        //    try
+        //    {
+        //        var currentUser = await _helper.GetCurrentUserProfile(User);
 
-                if (!currentUser.Images.Any(i => i.FileName == fileName)) return BadRequest();
+        //        if (!currentUser.Images.Any(i => i.FileName == fileName)) return BadRequest();
 
-                return Ok(await _imageUtil.GetImageByFileName(currentUser.ProfileId, fileName));
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //        return Ok(await _imageUtil.GetImageByFileName(currentUser.ProfileId, fileName));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
         #endregion
 

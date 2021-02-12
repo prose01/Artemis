@@ -81,10 +81,10 @@ namespace Artemis
             }
         }
 
-        /// <summary>Deletes images from current user.</summary>
+        /// <summary>Deletes images for current user.</summary>
         /// <param name="currentUser">The current user.</param>
         /// <param name="imageIds">The image identifier.</param>
-        public async Task DeleteImagesFromCurrentUser(CurrentUser currentUser, string[] imageIds)
+        public async Task DeleteImagesForCurrentUser(CurrentUser currentUser, string[] imageIds)
         {
             try
             {

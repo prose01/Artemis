@@ -9,7 +9,7 @@ namespace Artemis.Interfaces
     {
         Task UploadAsync(string profileIdPath, string fileName, Stream fileStream);
         Task<Stream> DownloadImageByFileNameAsync(string profileId, string fileName);
-        Task DeleteImageByFileNameAsync(string profileId, string fileName);
+        Task DeleteImageByFileNameAsync(string fileName);
         Task<List<Stream>> DownloadAllImagesAsync(string profileId);
         Task DeleteAllImagesAsync(string profileId);
     }

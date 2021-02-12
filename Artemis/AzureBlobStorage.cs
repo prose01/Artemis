@@ -52,12 +52,12 @@ namespace Artemis
             }
         }
 
-        public async Task DeleteImageByFileNameAsync(string profileId, string fileName)
+        public async Task DeleteImageByFileNameAsync(string fileName)
         {
             try
             {
                 // Get a reference to a blob
-                BlobClient blob = _container.GetBlobClient(Path.Combine(profileId, fileName + ".jpeg"));
+                BlobClient blob = _container.GetBlobClient(fileName);
 
                 // DeleteAsync
                 await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);

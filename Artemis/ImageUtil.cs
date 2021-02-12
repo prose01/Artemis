@@ -2,6 +2,10 @@
 using Artemis.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +18,7 @@ namespace Artemis
         private readonly IAzureBlobStorage _azureBlobStorage;
         private readonly ICurrentUserRepository _profileRepository;
         private readonly long _fileSizeLimit;
+        private readonly string[] fileSizes = new string[] { "_large", "_small", "_medium" };
 
         public ImageUtil(IConfiguration config, IAzureBlobStorage azureBlobStorage, ICurrentUserRepository profileRepository)
         {
@@ -34,22 +39,37 @@ namespace Artemis
         {
             try
             {
-                //if (image.Length < 0 || image.Length > _fileSizeLimit)
-                //{
-                //    // TODO: Find på noget bedre end en exception når den fejler fx. pga. file size.
-                //    throw new Exception();
-                //}
+                if (image.Length < 0 || image.Length > _fileSizeLimit)
+                {
+                    // TODO: Find på noget bedre end en exception når den fejler fx. pga. file size.
+                    throw new Exception();
+                }
 
                 // TODO: Scan files for virus!!!!!
 
                 var randomFileName = Path.GetRandomFileName();
                 var fileName = randomFileName.Split('.');
 
-                //await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0], new System.IO.MemoryStream());
-
+                // Save original image
                 using (var stream = image.OpenReadStream())
                 {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0], stream);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0] + fileSizes[0], stream);
+                }
+
+                // Resize image to small and save 
+                var small = this.ConvertImageToByteArray(image, 150, 150);
+
+                using (var stream = new MemoryStream(small))
+                {
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0] + fileSizes[1], stream);
+                }
+
+                // Resize image to medium and save 
+                var medium = this.ConvertImageToByteArray(image, 300, 300);
+
+                using (var stream = new MemoryStream(medium))
+                {
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0] + fileSizes[2], stream);
                 }
 
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.
@@ -74,7 +94,10 @@ namespace Artemis
 
                     if (imageModel != null)
                     {
-                        await _azureBlobStorage.DeleteImageByFileNameAsync(currentUser.ProfileId, imageModel.FileName);
+                        for (int i = 0; i < fileSizes.Length; i++)
+                        {
+                            await _azureBlobStorage.DeleteImageByFileNameAsync(Path.Combine(currentUser.ProfileId, imageModel.FileName + fileSizes[i] + ".jpeg"));
+                        }
 
                         // Remove image reference in database.
                         await _profileRepository.RemoveImageFromCurrentUser(currentUser, imageId);
@@ -162,6 +185,89 @@ namespace Artemis
             try
             {
                 _azureBlobStorage.DeleteAllImagesAsync(currentUser.ProfileId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private byte[] ConvertImageToByteArray(IFormFile inputImage, int maxWidth = 50, int maxHeight = 100)
+        {
+            try
+            {
+                byte[] result = null;
+
+                // memory stream
+                using (var memoryStream = new MemoryStream())
+
+                // filestream
+                using (var image = Image.Load(inputImage.OpenReadStream())) // IFormFile inputImage
+                {
+                    //var before = memoryStream.Length; Removed this, assuming you are using for debugging?
+                    //var beforeMutations = image.Size();
+
+                    var width = image.Width;
+                    var height = image.Height;
+
+                    if (width >= maxWidth && height >= maxHeight)
+                    {
+
+                        int newWidth;
+                        int newHeight;
+
+                        if (width > height)
+                        {
+                            newHeight = height * (maxWidth / width);
+                            newWidth = maxWidth;
+                        }
+                        else
+                        {
+                            newWidth = width * (maxHeight / height);
+                            newHeight = maxHeight;
+                        }
+
+                        // dummy resize options
+                        //int width = 50;
+                        //int height = 100;
+                        IResampler sampler = KnownResamplers.MitchellNetravali;
+                        bool compand = true;
+                        ResizeMode mode = ResizeMode.BoxPad;
+
+                        // init resize object
+                        var resizeOptions = new ResizeOptions
+                        {
+                            Size = new Size(newWidth, newHeight),
+                            Sampler = sampler,
+                            Compand = compand,
+                            Mode = mode
+                        };
+
+                        // mutate image
+                        image.Mutate(x => x
+                             .Resize(resizeOptions));
+
+                        //var afterMutations = image.Size();
+                    }
+
+                    //Encode here for quality
+                    var encoder = new JpegEncoder()
+                    {
+                        Quality = 75 //Use variable to set between 5-30 based on your requirements
+                    };
+
+                    //This saves to the memoryStream with encoder
+                    image.Save(memoryStream, encoder);
+                    memoryStream.Position = 0; // The position needs to be reset.
+
+                    // prepare result to byte[]
+                    result = memoryStream.ToArray();
+
+                    //var after = memoryStream.Length; // kind of not needed.
+
+                    return result;
+                }
+
             }
             catch (Exception ex)
             {

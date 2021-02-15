@@ -1,4 +1,5 @@
 ﻿using Artemis.Interfaces;
+using Artemis.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -106,15 +107,16 @@ namespace Artemis.Controllers
 
         /// <summary>Gets all images from specified profileId.</summary>
         /// <param name="profileId">The profile identifier.</param>
+        /// <param name="imageSize">The size of image.</param>
         /// <returns></returns>
-        [HttpGet("~/GetProfileImages/{profileId}")]
-        public async Task<IActionResult> GetProfileImages(string profileId)
+        [HttpGet("~/GetProfileImages/{profileId},{imageSize}")]
+        public async Task<IActionResult> GetProfileImages(string profileId, ImageSizeEnum imageSize)
         {
             try
             {
                 if (string.IsNullOrEmpty(profileId)) return BadRequest();
 
-                return Ok(await _imageUtil.GetImagesAsync(profileId));
+                return Ok(await _imageUtil.GetImagesAsync(profileId, imageSize));
             }
             catch (Exception ex)
             {
@@ -125,16 +127,17 @@ namespace Artemis.Controllers
         /// <summary>Gets an images from Profile by Image fileName.</summary>
         /// <param name="profileId">The profile identifier.</param>
         /// <param name="fileName">The image fileName.</param>
+        /// <param name="imageSize">The size of image.</param>
         /// <returns></returns>
-        [HttpGet("~/GetProfileImageByFileName/{profileId},{fileName}")]
-        public async Task<IActionResult> GetProfileImageByFileName(string profileId, string fileName)
+        [HttpGet("~/GetProfileImageByFileName/{profileId},{fileName},{imageSize}")]
+        public async Task<IActionResult> GetProfileImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
         {
             try
             {
                 if (string.IsNullOrEmpty(profileId)) return BadRequest();
                 if (string.IsNullOrEmpty(fileName)) return BadRequest();
 
-                return Ok(await _imageUtil.GetImageByFileName(profileId, fileName));
+                return Ok(await _imageUtil.GetImageByFileName(profileId, fileName, imageSize));
             }
             catch (Exception ex)
             {

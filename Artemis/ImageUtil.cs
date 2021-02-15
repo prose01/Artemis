@@ -18,7 +18,6 @@ namespace Artemis
         private readonly IAzureBlobStorage _azureBlobStorage;
         private readonly ICurrentUserRepository _profileRepository;
         private readonly long _fileSizeLimit;
-        private readonly string[] fileSizes = new string[] { "_large", "_small", "_medium" };
 
         public ImageUtil(IConfiguration config, IAzureBlobStorage azureBlobStorage, ICurrentUserRepository profileRepository)
         {
@@ -53,7 +52,7 @@ namespace Artemis
                 // Save original image
                 using (var stream = image.OpenReadStream())
                 {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0] + fileSizes[0], stream);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.large.ToString(), fileName[0]), stream);
                 }
 
                 // Resize image to small and save 
@@ -61,7 +60,7 @@ namespace Artemis
 
                 using (var stream = new MemoryStream(small))
                 {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0] + fileSizes[1], stream);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.small.ToString(), fileName[0]), stream);
                 }
 
                 // Resize image to medium and save 
@@ -69,7 +68,7 @@ namespace Artemis
 
                 using (var stream = new MemoryStream(medium))
                 {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, fileName[0] + fileSizes[2], stream);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.medium.ToString(), fileName[0]), stream);
                 }
 
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.
@@ -94,9 +93,9 @@ namespace Artemis
 
                     if (imageModel != null)
                     {
-                        for (int i = 0; i < fileSizes.Length; i++)
+                        foreach (var size in Enum.GetNames(typeof(ImageSizeEnum)))
                         {
-                            await _azureBlobStorage.DeleteImageByFileNameAsync(Path.Combine(currentUser.ProfileId, imageModel.FileName + fileSizes[i] + ".jpeg"));
+                            await _azureBlobStorage.DeleteImageByFileNameAsync(Path.Combine(currentUser.ProfileId, Path.Combine(size.ToString(), imageModel.FileName) + ".jpeg"));
                         }
 
                         // Remove image reference in database.
@@ -113,13 +112,13 @@ namespace Artemis
         /// <summary>Gets all images from specified profileId.</summary>
         /// <param name="profileId">The profile identifier.</param>
         /// <returns></returns>
-        public async Task<List<byte[]>> GetImagesAsync(string profileId)
+        public async Task<List<byte[]>> GetImagesAsync(string profileId, ImageSizeEnum imageSize)
         {
             List<byte[]> images = new List<byte[]>();
 
             try
             {
-                List<Stream> streams = await _azureBlobStorage.DownloadAllImagesAsync(profileId);
+                List<Stream> streams = await _azureBlobStorage.DownloadAllImagesAsync(profileId, imageSize);
 
                 foreach (var stream in streams)
                 {
@@ -142,11 +141,11 @@ namespace Artemis
         /// <param name="currentUser">The current user.</param>
         /// <param name="fileName">The image fileName.</param>
         /// <returns></returns>
-        public async Task<byte[]> GetImageByFileName(string profileId, string fileName)
+        public async Task<byte[]> GetImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
         {
             try
             {
-                Stream stream = await _azureBlobStorage.DownloadImageByFileNameAsync(profileId, fileName);
+                Stream stream = await _azureBlobStorage.DownloadImageByFileNameAsync(profileId, Path.Combine(imageSize.ToString(), fileName));
 
                 using (MemoryStream ms = new MemoryStream())
                 {

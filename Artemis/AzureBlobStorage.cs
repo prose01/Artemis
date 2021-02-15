@@ -1,4 +1,5 @@
 ﻿using Artemis.Interfaces;
+using Artemis.Model;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
@@ -69,14 +70,16 @@ namespace Artemis
             }
         }
 
-        public async Task<List<Stream>> DownloadAllImagesAsync(string profileId)
+        public async Task<List<Stream>> DownloadAllImagesAsync(string profileId, ImageSizeEnum imageSize)
         {
             try
             {
+                //var path = Path.Combine(profileId, imageSize.ToString());
+
                 List<Stream> streams = new List<Stream>();
 
                 // Get a reference to a blob
-                var blobItems = _container.GetBlobsAsync(prefix: profileId);
+                var blobItems = _container.GetBlobsAsync(prefix: profileId + "/" + imageSize.ToString() + "/");
 
                 // Get everything Async
                 await foreach (BlobItem blobItem in blobItems)

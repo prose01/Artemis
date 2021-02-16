@@ -41,7 +41,7 @@ namespace Artemis
                 if (image.Length < 0 || image.Length > _fileSizeLimit)
                 {
                     // TODO: Find på noget bedre end en exception når den fejler fx. pga. file size.
-                    throw new Exception();
+                    throw new Exception($"Image has exceeded maximum size.");
                 }
 
                 // TODO: Scan files for virus!!!!!

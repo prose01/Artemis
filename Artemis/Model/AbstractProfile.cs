@@ -38,6 +38,8 @@ namespace Artemis.Model
         [Range(0, 250)]
         public abstract int? Height { get; set; }
 
+        public abstract bool Contactable { get; set; }
+
         [StringLength(2000, ErrorMessage = "Description length cannot be more than 2000.")]
         public abstract string Description { get; set; }
         public abstract List<ImageModel> Images { get; set; }

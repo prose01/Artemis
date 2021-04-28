@@ -24,6 +24,7 @@ namespace Artemis.Model
         public override DateTime LastActive { get; set; } = DateTime.Now;
         public override int? Age { get; set; } = null;
         public override int? Height { get; set; }
+        public override bool Contactable { get; set; } = true;
         public override string Description { get; set; }
         public override List<ImageModel> Images { get; set; }
         public override List<string> Tags { get; set; }

@@ -93,13 +93,13 @@ namespace Artemis
 
                     if (imageModel != null)
                     {
+                        // Remove image reference in database.
+                        await _profileRepository.RemoveImageFromCurrentUser(currentUser, imageId);
+
                         foreach (var size in Enum.GetNames(typeof(ImageSizeEnum)))
                         {
                             await _azureBlobStorage.DeleteImageByFileNameAsync(Path.Combine(currentUser.ProfileId, Path.Combine(size.ToString(), imageModel.FileName) + ".jpeg"));
                         }
-
-                        // Remove image reference in database.
-                        await _profileRepository.RemoveImageFromCurrentUser(currentUser, imageId);
                     }
                 }
             }

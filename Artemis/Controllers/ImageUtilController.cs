@@ -30,24 +30,22 @@ namespace Artemis.Controllers
         #region CurrentUser
 
         /// <summary>Upload images to the profile image folder.</summary>
-        /// <param name="imagemodel"></param>
-        /// <exception cref="ArgumentException">Image length is < 1 {imagemodel.Image.Length}. - image</exception>
-        /// <exception cref="ArgumentException">Image must have a title. - Title</exception>
+        /// <param name="image"></param>
+        /// <param name="title"></param>
+        /// <exception cref="ArgumentException">User has exceeded maximum number of images. {currentUser.Images.Count}</exception>
         [HttpPost("~/UploadImage")]
+        [ProducesResponseType(204)]
         public async Task<IActionResult> UploadImage([FromForm] IFormFile image, [FromForm] string title)
         {
-            //if (imagemodel.Image.Length < 0) throw new ArgumentException($"Image length is < 1 {imagemodel.Image.Length}.", nameof(imagemodel.Image));
-            //if (string.IsNullOrEmpty(imagemodel.Title)) throw new ArgumentException($"Image must have a title.", nameof(imagemodel.Title));
-
             try
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
                 if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
-                _imageUtil.AddImageToCurrentUser(currentUser, image, title);
+                await _imageUtil.AddImageToCurrentUser(currentUser, image, title);
 
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -58,12 +56,11 @@ namespace Artemis.Controllers
         /// <summary>Deletes the image for current user.</summary>
         /// <param name="imageId">The image identifier.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException">ModelState is not valid {ModelState.IsValid}. - imageId</exception>
         [HttpPost("~/DeleteImagesForCurrentUser")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> DeleteImagesForCurrentUser([FromBody] string[] imageIds)
         {
-            //if (!ModelState.IsValid) throw new ArgumentException($"ModelState is not valid {ModelState.IsValid}.", nameof(imageIds)); unnecessary 
-
             try
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
@@ -75,7 +72,7 @@ namespace Artemis.Controllers
 
                 await _imageUtil.DeleteImagesForCurrentUser(currentUser, imageIds);
 
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -112,6 +109,9 @@ namespace Artemis.Controllers
         /// <param name="imageSize">The size of image.</param>
         /// <returns></returns>
         [HttpGet("~/GetProfileImages/{profileId},{imageSize}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetProfileImages(string profileId, ImageSizeEnum imageSize)
         {
             try
@@ -122,7 +122,7 @@ namespace Artemis.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Problem(ex.ToString());
             }
         }
 
@@ -132,6 +132,9 @@ namespace Artemis.Controllers
         /// <param name="imageSize">The size of image.</param>
         /// <returns></returns>
         [HttpGet("~/GetProfileImageByFileName/{profileId},{fileName},{imageSize}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetProfileImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
         {
             try
@@ -143,7 +146,7 @@ namespace Artemis.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Problem(ex.ToString());
             }
         }
 
@@ -155,6 +158,7 @@ namespace Artemis.Controllers
         /// <param name="profileIds">The profile identifiers.</param>
         /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
         [HttpPost("~/DeleteAllImagesForProfile")]
+        [ProducesResponseType(204)]
         public async Task<IActionResult> DeleteAllImagesForProfile([FromBody] string[] profileIds)
         {
             try
@@ -168,16 +172,18 @@ namespace Artemis.Controllers
                     _imageUtil.DeleteAllImagesForProfile(currentUser, profileId);
                 }
 
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Problem(ex.ToString());
             }
         }
 
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
         [HttpPost("~/DeleteAllImagesForCurrentUser")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> DeleteAllImagesForCurrentUser()
         {
             try
@@ -187,11 +193,11 @@ namespace Artemis.Controllers
                 if (currentUser.Admin) return BadRequest(); // Admins cannot delete themseleves.
 
                 _imageUtil.DeleteAllImagesForCurrentUser(currentUser);
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Problem(ex.ToString());
             }
         }
 

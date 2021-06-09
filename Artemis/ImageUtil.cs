@@ -74,9 +74,9 @@ namespace Artemis
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.
                 await _profileRepository.AddImageToCurrentUser(currentUser, fileName[0], title);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -103,9 +103,9 @@ namespace Artemis
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -131,9 +131,9 @@ namespace Artemis
 
                 return images;
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -153,9 +153,9 @@ namespace Artemis
                     return ms.ToArray();
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -171,9 +171,9 @@ namespace Artemis
             {
                 _azureBlobStorage.DeleteAllImagesAsync(profileId);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -185,12 +185,19 @@ namespace Artemis
             {
                 _azureBlobStorage.DeleteAllImagesAsync(currentUser.ProfileId);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
+        /// Taken from https://github.com/SixLabors/ImageSharp
+        /// https://docs.sixlabors.com/articles/imagesharp/index.html?tabs=tabid-1
+        /// <summary>Converts the image to byte array.</summary>
+        /// <param name="inputImage">The input image.</param>
+        /// <param name="maxWidth">The maximum width.</param>
+        /// <param name="maxHeight">The maximum height.</param>
+        /// <returns></returns>
         private byte[] ConvertImageToByteArray(IFormFile inputImage, int maxWidth = 50, int maxHeight = 100)
         {
             try
@@ -268,9 +275,9 @@ namespace Artemis
                 }
 
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
     }

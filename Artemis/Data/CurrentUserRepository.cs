@@ -35,12 +35,10 @@ namespace Artemis.Data
                 };
 
                 return await _context.CurrentUser.FindOneAndUpdateAsync(filter, update, options);
-
-
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -69,9 +67,9 @@ namespace Artemis.Data
 
                 return await _context.CurrentUser.FindOneAndUpdateAsync(filter, update, options);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -99,9 +97,9 @@ namespace Artemis.Data
 
                 return await _context.CurrentUser.FindOneAndUpdateAsync(filter, update, options);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
     }

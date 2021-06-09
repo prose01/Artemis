@@ -26,11 +26,11 @@ namespace Artemis
         {
             try
             {
-                _container.UploadBlob(Path.Combine(profileId, fileName + ".jpeg"), fileStream);
+                await _container.UploadBlobAsync(Path.Combine(profileId, fileName + ".jpeg"), fileStream);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -47,9 +47,9 @@ namespace Artemis
                 return download.Content;
 
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -64,9 +64,9 @@ namespace Artemis
                 await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
 
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -94,9 +94,9 @@ namespace Artemis
                 return streams;
 
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -115,9 +115,9 @@ namespace Artemis
                 }
 
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 

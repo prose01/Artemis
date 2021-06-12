@@ -64,12 +64,12 @@ namespace Artemis
                 }
 
                 // Resize image to medium and save 
-                var medium = this.ConvertImageToByteArray(image, 300, 300);
+                //var medium = this.ConvertImageToByteArray(image, 300, 300);
 
-                using (var stream = new MemoryStream(medium))
-                {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.medium.ToString(), fileName[0]), stream);
-                }
+                //using (var stream = new MemoryStream(medium))
+                //{
+                //    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.medium.ToString(), fileName[0]), stream);
+                //}
 
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.
                 await _profileRepository.AddImageToCurrentUser(currentUser, fileName[0], title);
@@ -163,9 +163,12 @@ namespace Artemis
         /// <param name="currentUser">The CurrentUser.</param>
         /// <param name="profileId">The profile identifier.</param>
         /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
+        /// <exception cref="ArgumentException">ProfileId is missing. {profileId}</exception>
         public void DeleteAllImagesForProfile(CurrentUser currentUser, string profileId)
         {
             if (!currentUser.Admin) throw new Exception("You don't have admin rights to delete other people's images.");
+
+            if (profileId == null) throw new ArgumentException("ProfileId is missing.");
 
             try
             {
@@ -179,8 +182,11 @@ namespace Artemis
 
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
         /// <param name="currentUser">The CurrentUser.</param>
+        /// <exception cref="ArgumentException">ProfileId is missing. {currentUser.ProfileId}</exception>
         public void DeleteAllImagesForCurrentUser(CurrentUser currentUser)
         {
+            if (currentUser.ProfileId == null) throw new ArgumentException("ProfileId is missing.");
+
             try
             {
                 _azureBlobStorage.DeleteAllImagesAsync(currentUser.ProfileId);

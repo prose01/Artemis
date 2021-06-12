@@ -192,6 +192,8 @@ namespace Artemis.Controllers
 
                 if (currentUser.Admin) return BadRequest(); // Admins cannot delete themseleves.
 
+                if (currentUser.ProfileId == null) return BadRequest();
+
                 _imageUtil.DeleteAllImagesForCurrentUser(currentUser);
 
                 return NoContent();

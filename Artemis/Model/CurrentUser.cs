@@ -12,6 +12,7 @@ namespace Artemis.Model
         public ProfileFilter ProfileFilter { get; set; }
         public override Dictionary<string, DateTime> Visited { get; set; }
         public override Dictionary<string, DateTime> IsBookmarked { get; set; }
+        public List<string> Likes { get; set; }
         #endregion
 
         public override ObjectId _id { get; set; }

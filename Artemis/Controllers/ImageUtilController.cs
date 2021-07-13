@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Artemis.Controllers
@@ -34,7 +35,7 @@ namespace Artemis.Controllers
         /// <param name="title"></param>
         /// <exception cref="ArgumentException">User has exceeded maximum number of images. {currentUser.Images.Count}</exception>
         [HttpPost("~/UploadImage")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UploadImage([FromForm] IFormFile image, [FromForm] string title)
         {
             try
@@ -57,8 +58,8 @@ namespace Artemis.Controllers
         /// <param name="imageId">The image identifier.</param>
         /// <returns></returns>
         [HttpPost("~/DeleteImagesForCurrentUser")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> DeleteImagesForCurrentUser([FromBody] string[] imageIds)
         {
             try
@@ -109,9 +110,9 @@ namespace Artemis.Controllers
         /// <param name="imageSize">The size of image.</param>
         /// <returns></returns>
         [HttpGet("~/GetProfileImages/{profileId},{imageSize}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetProfileImages(string profileId, ImageSizeEnum imageSize)
         {
             try
@@ -132,9 +133,9 @@ namespace Artemis.Controllers
         /// <param name="imageSize">The size of image.</param>
         /// <returns></returns>
         [HttpGet("~/GetProfileImageByFileName/{profileId},{fileName},{imageSize}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetProfileImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
         {
             try
@@ -158,7 +159,7 @@ namespace Artemis.Controllers
         /// <param name="profileIds">The profile identifiers.</param>
         /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
         [HttpPost("~/DeleteAllImagesForProfile")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteAllImagesForProfile([FromBody] string[] profileIds)
         {
             try
@@ -182,8 +183,8 @@ namespace Artemis.Controllers
 
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
         [HttpPost("~/DeleteAllImagesForCurrentUser")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> DeleteAllImagesForCurrentUser()
         {
             try

@@ -10,9 +10,9 @@ namespace Artemis.Model
         public List<string> Bookmarks { get; set; }
         public List<ChatMember> ChatMemberslist { get; set; }
         public ProfileFilter ProfileFilter { get; set; }
-        public override Dictionary<string, DateTime> Visited { get; set; }
+        public Dictionary<string, DateTime> Visited { get; set; }
         public override Dictionary<string, DateTime> IsBookmarked { get; set; }
-        public List<string> Likes { get; set; }
+        public override List<string> Likes { get; set; }
         #endregion
 
         public override ObjectId _id { get; set; }

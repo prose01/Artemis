@@ -1,7 +1,6 @@
 ﻿using Artemis.Interfaces;
 using Artemis.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
@@ -17,11 +16,9 @@ namespace Artemis
     {
         private readonly IAzureBlobStorage _azureBlobStorage;
         private readonly ICurrentUserRepository _profileRepository;
-        private readonly long _fileSizeLimit;
 
-        public ImageUtil(IConfiguration config, IAzureBlobStorage azureBlobStorage, ICurrentUserRepository profileRepository)
+        public ImageUtil(IAzureBlobStorage azureBlobStorage, ICurrentUserRepository profileRepository)
         {
-            _fileSizeLimit = config.GetValue<long>("FileSizeLimit");
             _azureBlobStorage = azureBlobStorage;
             _profileRepository = profileRepository;
         }
@@ -38,12 +35,6 @@ namespace Artemis
         {
             try
             {
-                if (image.Length < 0 || image.Length > _fileSizeLimit)
-                {
-                    // TODO: Find på noget bedre end en exception når den fejler fx. pga. file size.
-                    throw new Exception($"Image has exceeded maximum size.");
-                }
-
                 // TODO: Scan files for virus!!!!!
 
                 var randomFileName = Path.GetRandomFileName();

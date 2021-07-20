@@ -20,9 +20,11 @@ namespace Artemis.Controllers
         private readonly IHelperMethods _helper;
         private readonly IImageUtil _imageUtil;
         private readonly long _maxImageNumber;
+        private readonly long _fileSizeLimit;
 
         public ImageUtilController(IConfiguration config, IHelperMethods helperMethods, IImageUtil imageUtil)
         {
+            _fileSizeLimit = config.GetValue<long>("FileSizeLimit");
             _maxImageNumber = config.GetValue<long>("MaxImageNumber");
             _helper = helperMethods;
             _imageUtil = imageUtil;
@@ -43,6 +45,12 @@ namespace Artemis.Controllers
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
                 if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
+
+                if (image.Length < 0 || image.Length > _fileSizeLimit)
+                {
+                    var limitMB = (_fileSizeLimit / 1000000);
+                    return BadRequest($"Image has exceeded the maximum size of {limitMB} MB."); 
+                }
 
                 await _imageUtil.AddImageToCurrentUser(currentUser, image, title);
 

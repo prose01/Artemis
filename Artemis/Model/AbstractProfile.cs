@@ -9,17 +9,13 @@ namespace Artemis.Model
     [BsonKnownTypes(typeof(CurrentUser))]
     public abstract class AbstractProfile
     {
-        #region special properties
-        //public abstract Dictionary<string, DateTime> Visited { get; set; }
-        public abstract Dictionary<string, DateTime> IsBookmarked { get; set; }
-        public abstract List<string> Likes { get; set; }
-        #endregion
-
         [BsonId]
-        public abstract ObjectId _id { get; set; }
-        public abstract string Auth0Id { get; set; }
+        internal abstract ObjectId _id { get; set; }
+        public abstract string Auth0Id { internal get; set; }
         public abstract string ProfileId { get; set; }
         public abstract bool Admin { get; set; }
+
+        [StringLength(50, ErrorMessage = "Name length cannot be more than 50.")]
         public abstract string Name { get; set; }
 
         [DataType(DataType.DateTime)]
@@ -45,12 +41,6 @@ namespace Artemis.Model
         public abstract List<ImageModel> Images { get; set; }
 
         public abstract List<string> Tags { get; set; }
-
-        [BsonRepresentation(BsonType.String)]
-        public abstract GenderType Gender { get; set; }
-
-        [BsonRepresentation(BsonType.String)]
-        public abstract SexualOrientationType SexualOrientation { get; set; } // TODO: Should this be encrypted?
 
         [BsonRepresentation(BsonType.String)]
         public abstract BodyType Body { get; set; }

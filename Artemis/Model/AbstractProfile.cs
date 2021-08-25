@@ -27,6 +27,8 @@ namespace Artemis.Model
         [DataType(DataType.DateTime)]
         public abstract DateTime LastActive { get; set; }
 
+        public abstract string Countrycode { get; set; }
+
         [Range(16, 120)]
         public abstract int? Age { get; set; }
 

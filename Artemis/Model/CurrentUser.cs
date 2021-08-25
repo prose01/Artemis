@@ -15,6 +15,7 @@ namespace Artemis.Model
         [BsonRepresentation(BsonType.String)]
         public GenderType Gender { get; set; }
 
+        public string Languagecode { get; set; }
         public List<string> Bookmarks { get; set; }
         public List<ChatMember> ChatMemberslist { get; set; }
         public ProfileFilter ProfileFilter { get; set; }
@@ -31,6 +32,7 @@ namespace Artemis.Model
         public override DateTime CreatedOn { get; set; } = DateTime.Now;
         public override DateTime UpdatedOn { get; set; } = DateTime.Now;
         public override DateTime LastActive { get; set; } = DateTime.Now;
+        public override string Countrycode { get; set; }
         public override int? Age { get; set; } = null;
         public override int? Height { get; set; }
         public override bool Contactable { get; set; } = true;

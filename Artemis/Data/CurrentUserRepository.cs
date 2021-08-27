@@ -51,7 +51,7 @@ namespace Artemis.Data
         {
             try
             {
-                var imageModel = new ImageModel() { ImageId = Guid.NewGuid().ToString(), FileName = fileName, Title = title };
+                var imageModel = new ImageModel() { ImageId = Guid.NewGuid().ToString(), FileName = fileName, Title = title == "null" ? null : title  };
 
                 var filter = Builders<CurrentUser>
                                 .Filter.Eq(e => e.ProfileId, currentUser.ProfileId);

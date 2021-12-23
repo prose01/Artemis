@@ -7,7 +7,7 @@ namespace Artemis.Interfaces
 {
     public interface IImageUtil
     {
-        Task AddImageToCurrentUser(CurrentUser currentUser, IFormFile photo, string title);
+        Task AddImageToCurrentUser(CurrentUser currentUser, IFormFile image, string title);
         Task DeleteImagesForCurrentUser(CurrentUser currentUser, string[] imageIds);
         Task<List<byte[]>> GetImagesAsync(string profileId, ImageSizeEnum imageSize);
         Task<byte[]> GetImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize);

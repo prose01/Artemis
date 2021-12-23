@@ -4,6 +4,8 @@
     {
         public string ProfileId { get; set; }
 
+        public string Name { get; set; }
+
         public bool Blocked { get; set; }
     }
 }

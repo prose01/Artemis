@@ -35,15 +35,16 @@ namespace Artemis
         public void ConfigureServices(IServiceCollection services)
         {
             // Add service and create Policy with options
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("CorsPolicy",
-            //        builder => builder.WithOrigins("http://localhost:4200")
-            //                    .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD")
-            //                    .AllowAnyHeader()
-            //                    .AllowCredentials()
-            //        );
-            //});
+            // TODO: Remember to remove Cors for production.
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.WithOrigins("http://localhost:4200")
+                                .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD")
+                                .AllowAnyHeader()
+                                .AllowCredentials()
+                    );
+            });
 
             // Add framework services.
             services.AddMvc().AddJsonOptions(options => {
@@ -150,8 +151,8 @@ namespace Artemis
             }
 
             // Shows UseCors with CorsPolicyBuilder.
-            // Remember to remove Cors for production.
-            //app.UseCors("CorsPolicy");
+            // TODO: Remember to remove Cors for production.
+            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
 

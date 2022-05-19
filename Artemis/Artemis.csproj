@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.12.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.5" />
     <PackageReference Include="MongoDB.Driver" Version="2.15.1" />
     <PackageReference Include="SixLabors.ImageSharp.Web" Version="2.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />

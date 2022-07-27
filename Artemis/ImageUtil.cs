@@ -40,10 +40,12 @@ namespace Artemis
                 var randomFileName = Path.GetRandomFileName();
                 var fileName = randomFileName.Split('.');
 
+                var format = image.ContentType.Split('/');
+
                 // Save original image
                 using (var stream = image.OpenReadStream())
                 {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.large.ToString(), fileName[0]), stream);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.large.ToString(), fileName[0] + '.' + format[1]), stream);
                 }
 
                 // Resize image to small and save 
@@ -51,7 +53,7 @@ namespace Artemis
 
                 using (var stream = new MemoryStream(small))
                 {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.small.ToString(), fileName[0]), stream);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.small.ToString(), fileName[0] + '.' + format[1]), stream);
                 }
 
                 // Resize image to medium and save 
@@ -63,7 +65,7 @@ namespace Artemis
                 //}
 
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.
-                await _profileRepository.AddImageToCurrentUser(currentUser, fileName[0], title);
+                await _profileRepository.AddImageToCurrentUser(currentUser, fileName[0] + '.' + format[1], title);
             }
             catch
             {
@@ -89,7 +91,13 @@ namespace Artemis
 
                         foreach (var size in Enum.GetNames(typeof(ImageSizeEnum)))
                         {
-                            await _azureBlobStorage.DeleteImageByFileNameAsync(Path.Combine(currentUser.ProfileId, Path.Combine(size.ToString(), imageModel.FileName) + ".jpeg"));
+                            // TODO: Temp condition to add jpeg to un-typed images.
+                            if (!imageModel.FileName.Contains('.'))
+                            {
+                                imageModel.FileName += ".jpeg";
+                            }
+
+                            await _azureBlobStorage.DeleteImageByFileNameAsync(Path.Combine(currentUser.ProfileId, Path.Combine(size.ToString(), imageModel.FileName)));
                         }
                     }
                 }

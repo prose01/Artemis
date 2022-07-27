@@ -25,7 +25,7 @@ namespace Artemis
         {
             try
             {
-                await _container.UploadBlobAsync(Path.Combine(profileId, fileName + ".jpeg"), fileStream);
+                await _container.UploadBlobAsync(Path.Combine(profileId, fileName), fileStream);
             }
             catch
             {
@@ -37,8 +37,14 @@ namespace Artemis
         {
             try
             {
+                // TODO: Temp condition to add jpeg to un-typed images.
+                if (!fileName.Contains('.'))
+                {
+                    fileName += ".jpeg";
+                }
+
                 // Get a reference to a blob
-                BlobClient blob = _container.GetBlobClient(Path.Combine(profileId, fileName + ".jpeg"));
+                BlobClient blob = _container.GetBlobClient(Path.Combine(profileId, fileName));
 
                 // Download the blob's contents and save it to a file
                 BlobDownloadInfo download = await blob.DownloadAsync();

@@ -10,9 +10,6 @@ namespace Artemis.Model
         #region special properties
 
         [BsonRepresentation(BsonType.String)]
-        public SexualOrientationType SexualOrientation { get; set; }
-
-        [BsonRepresentation(BsonType.String)]
         public GenderType Gender { get; set; }
 
         public string Languagecode { get; set; }

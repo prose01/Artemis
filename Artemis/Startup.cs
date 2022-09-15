@@ -35,7 +35,6 @@ namespace Artemis
         public void ConfigureServices(IServiceCollection services)
         {
             // Add service and create Policy with options
-            // TODO: Remember to remove Cors for production.
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -151,7 +150,6 @@ namespace Artemis
             }
 
             // Shows UseCors with CorsPolicyBuilder.
-            // TODO: Remember to remove Cors for production.
             app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();

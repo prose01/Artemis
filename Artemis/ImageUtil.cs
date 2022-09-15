@@ -23,7 +23,7 @@ namespace Artemis
             _profileRepository = profileRepository;
         }
 
-        // TODO: Check this website for more info on this - https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-3.1
+        // Check this website for more info on this - https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-3.1
 
 
         /// <summary>Adds the image to current user.</summary>

@@ -1,7 +1,10 @@
 ﻿using Artemis.Interfaces;
 using Artemis.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,18 +14,16 @@ namespace Artemis
 {
     public class ImageUtil : IImageUtil
     {
+        private readonly IAzureBlobStorage _azureBlobStorage;
         private readonly ICurrentUserRepository _profileRepository;
-        private readonly string _imagePath;
-        private readonly long _fileSizeLimit;
 
-        public ImageUtil(IConfiguration config, ICurrentUserRepository profileRepository)
+        public ImageUtil(IAzureBlobStorage azureBlobStorage, ICurrentUserRepository profileRepository)
         {
-            _imagePath = config.GetValue<string>("ImagePath");
-            _fileSizeLimit = config.GetValue<long>("FileSizeLimit");
+            _azureBlobStorage = azureBlobStorage;
             _profileRepository = profileRepository;
         }
 
-        // TODO: Check this website for more info on this - https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-3.1
+        // Check this website for more info on this - https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-3.1
 
 
         /// <summary>Adds the image to current user.</summary>
@@ -34,42 +35,48 @@ namespace Artemis
         {
             try
             {
-                if (image.Length < 0 || image.Length > _fileSizeLimit)
-                {
-                    // TODO: Find på noget bedre end en exception når den fejler fx. pga. file size.
-                    throw new Exception();
-                }
-
                 // TODO: Scan files for virus!!!!!
 
                 var randomFileName = Path.GetRandomFileName();
                 var fileName = randomFileName.Split('.');
 
-                // TODO: Find a place for you files!
-                if (!Directory.Exists(_imagePath + currentUser.ProfileId))
+                var format = image.ContentType.Split('/');
+
+                // Save original image
+                using (var stream = image.OpenReadStream())
                 {
-                    Directory.CreateDirectory(_imagePath + currentUser.ProfileId);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.large.ToString(), fileName[0] + '.' + format[1]), stream);
                 }
 
-                using (var filestream = File.Create(_imagePath + currentUser.ProfileId + "/" + fileName[0] + ".png"))
+                // Resize image to small and save 
+                var small = this.ConvertImageToByteArray(image, 150, 150);
+
+                using (var stream = new MemoryStream(small))
                 {
-                    await image.CopyToAsync(filestream);
-                    filestream.Flush();
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.small.ToString(), fileName[0] + '.' + format[1]), stream);
                 }
+
+                // Resize image to medium and save 
+                //var medium = this.ConvertImageToByteArray(image, 300, 300);
+
+                //using (var stream = new MemoryStream(medium))
+                //{
+                //    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.medium.ToString(), fileName[0]), stream);
+                //}
 
                 // Save image reference to database. Most come after save to disk/filestream or it will save empty image because of async call.
-                await _profileRepository.AddImageToCurrentUser(currentUser, fileName[0], title);
+                await _profileRepository.AddImageToCurrentUser(currentUser, fileName[0] + '.' + format[1], title);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
-        /// <summary>Deletes images from current user.</summary>
+        /// <summary>Deletes images for current user.</summary>
         /// <param name="currentUser">The current user.</param>
         /// <param name="imageIds">The image identifier.</param>
-        public async Task DeleteImagesFromCurrentUser(CurrentUser currentUser, string[] imageIds)
+        public async Task DeleteImagesForCurrentUser(CurrentUser currentUser, string[] imageIds)
         {
             try
             {
@@ -79,56 +86,53 @@ namespace Artemis
 
                     if (imageModel != null)
                     {
-                        // TODO: Find a place for you files!
-                        if (File.Exists(_imagePath + currentUser.ProfileId + "/" + imageModel.FileName + ".png"))
-                        {
-                            File.Delete(_imagePath + currentUser.ProfileId + "/" + imageModel.FileName + ".png");
-                        }
-
                         // Remove image reference in database.
                         await _profileRepository.RemoveImageFromCurrentUser(currentUser, imageId);
+
+                        foreach (var size in Enum.GetNames(typeof(ImageSizeEnum)))
+                        {
+                            // TODO: Temp condition to add jpeg to un-typed images.
+                            if (!imageModel.FileName.Contains('.'))
+                            {
+                                imageModel.FileName += ".jpeg";
+                            }
+
+                            await _azureBlobStorage.DeleteImageByFileNameAsync(Path.Combine(currentUser.ProfileId, Path.Combine(size.ToString(), imageModel.FileName)));
+                        }
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
         /// <summary>Gets all images from specified profileId.</summary>
         /// <param name="profileId">The profile identifier.</param>
         /// <returns></returns>
-        public async Task<List<byte[]>> GetImagesAsync(string profileId)
+        public async Task<List<byte[]>> GetImagesAsync(string profileId, ImageSizeEnum imageSize)
         {
             List<byte[]> images = new List<byte[]>();
 
             try
             {
-                byte[] result;
+                List<Stream> streams = await _azureBlobStorage.DownloadAllImagesAsync(profileId, imageSize);
 
-                // TODO: Find a place for you files!
-                if (Directory.Exists(_imagePath + profileId))
+                foreach (var stream in streams)
                 {
-                    var files = Directory.GetFiles(_imagePath + profileId + "/");
-
-                    foreach (var file in files)
+                    using (MemoryStream ms = new MemoryStream())
                     {
-                        using (FileStream stream = File.Open(file, FileMode.Open))
-                        {
-                            result = new byte[stream.Length];
-                            await stream.ReadAsync(result, 0, (int)stream.Length);
-                        }
-
-                        images.Add(result);
+                        stream.CopyTo(ms);
+                        images.Add(ms.ToArray());
                     }
                 }
 
                 return images;
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -136,29 +140,21 @@ namespace Artemis
         /// <param name="currentUser">The current user.</param>
         /// <param name="fileName">The image fileName.</param>
         /// <returns></returns>
-        public async Task<byte[]> GetImageByFileName(string profileId, string fileName)
+        public async Task<byte[]> GetImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
         {
             try
             {
-                // TODO: Find a place for you files!
-                if (File.Exists(_imagePath + profileId + "/" + fileName +".png"))
+                Stream stream = await _azureBlobStorage.DownloadImageByFileNameAsync(profileId, Path.Combine(imageSize.ToString(), fileName));
+
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    byte[] result;
-
-                    using (FileStream stream = File.Open(_imagePath + profileId + "/" + fileName + ".png", FileMode.Open))
-                    {
-                        result = new byte[stream.Length];
-                        await stream.ReadAsync(result, 0, (int)stream.Length);
-                    }
-
-                    return result;
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
                 }
-
-                return null; // TODO: Should return exception or error
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -166,39 +162,127 @@ namespace Artemis
         /// <param name="currentUser">The CurrentUser.</param>
         /// <param name="profileId">The profile identifier.</param>
         /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
+        /// <exception cref="ArgumentException">ProfileId is missing. {profileId}</exception>
         public void DeleteAllImagesForProfile(CurrentUser currentUser, string profileId)
         {
             if (!currentUser.Admin) throw new Exception("You don't have admin rights to delete other people's images.");
 
+            if (profileId == null) throw new ArgumentException("ProfileId is missing.");
+
             try
             {
-                // TODO: Find a place for you files!
-                //if (Directory.Exists(_imagePath + profileId))
-                //{
-                //    Directory.Delete(_imagePath + profileId, true);
-                //}
+                _azureBlobStorage.DeleteAllImagesAsync(profileId);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
         /// <param name="currentUser">The CurrentUser.</param>
+        /// <exception cref="ArgumentException">ProfileId is missing. {currentUser.ProfileId}</exception>
         public void DeleteAllImagesForCurrentUser(CurrentUser currentUser)
+        {
+            if (currentUser.ProfileId == null) throw new ArgumentException("ProfileId is missing.");
+
+            try
+            {
+                _azureBlobStorage.DeleteAllImagesAsync(currentUser.ProfileId);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// Taken from https://github.com/SixLabors/ImageSharp
+        /// https://docs.sixlabors.com/articles/imagesharp/index.html?tabs=tabid-1
+        /// <summary>Converts the image to byte array.</summary>
+        /// <param name="inputImage">The input image.</param>
+        /// <param name="maxWidth">The maximum width.</param>
+        /// <param name="maxHeight">The maximum height.</param>
+        /// <returns></returns>
+        private byte[] ConvertImageToByteArray(IFormFile inputImage, int maxWidth = 50, int maxHeight = 100)
         {
             try
             {
-                // TODO: Find a place for you files!
-                //if (Directory.Exists((_imagePath + currentUser.ProfileId))
-                //{
-                //    Directory.Delete(_imagePath + currentUser.ProfileId, true);
-                //}
+                byte[] result = null;
+
+                // memory stream
+                using (var memoryStream = new MemoryStream())
+
+                // filestream
+                using (var image = Image.Load(inputImage.OpenReadStream())) // IFormFile inputImage
+                {
+                    //var before = memoryStream.Length; Removed this, assuming you are using for debugging?
+                    //var beforeMutations = image.Size();
+
+                    var width = image.Width;
+                    var height = image.Height;
+
+                    if (width >= maxWidth && height >= maxHeight)
+                    {
+
+                        int newWidth;
+                        int newHeight;
+
+                        if (width > height)
+                        {
+                            newHeight = height * (maxWidth / width);
+                            newWidth = maxWidth;
+                        }
+                        else
+                        {
+                            newWidth = width * (maxHeight / height);
+                            newHeight = maxHeight;
+                        }
+
+                        // dummy resize options
+                        //int width = 50;
+                        //int height = 100;
+                        IResampler sampler = KnownResamplers.MitchellNetravali;
+                        bool compand = true;
+                        ResizeMode mode = ResizeMode.BoxPad;
+
+                        // init resize object
+                        var resizeOptions = new ResizeOptions
+                        {
+                            Size = new Size(newWidth, newHeight),
+                            Sampler = sampler,
+                            Compand = compand,
+                            Mode = mode
+                        };
+
+                        // mutate image
+                        image.Mutate(x => x
+                             .Resize(resizeOptions));
+
+                        //var afterMutations = image.Size();
+                    }
+
+                    //Encode here for quality
+                    var encoder = new JpegEncoder()
+                    {
+                        Quality = 75 //Use variable to set between 5-30 based on your requirements
+                    };
+
+                    //This saves to the memoryStream with encoder
+                    image.Save(memoryStream, encoder);
+                    memoryStream.Position = 0; // The position needs to be reset.
+
+                    // prepare result to byte[]
+                    result = memoryStream.ToArray();
+
+                    //var after = memoryStream.Length; // kind of not needed.
+
+                    return result;
+                }
+
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
     }

@@ -2,8 +2,12 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/Artemis",
+      "sslPort": 0
+    },
     "iisExpress": {
-      "applicationUrl": "http://localhost:53488",
+      "applicationUrl": "http://localhost:53468",
       "sslPort": 44378
     }
   },
@@ -12,7 +16,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "swagger/index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

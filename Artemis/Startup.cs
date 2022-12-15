@@ -55,7 +55,7 @@ namespace Artemis
             //    .AddSignalR();
 
             // Add authentication.
-            string domain = $"https://{Configuration["Auth0:Domain"]}/";
+            string domain = $"https://{Configuration["Auth0_Domain"]}/";
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -64,7 +64,7 @@ namespace Artemis
             }).AddJwtBearer(options =>
             {
                 options.Authority = domain;
-                options.Audience = Configuration["Auth0:ApiIdentifier"];
+                options.Audience = Configuration["Auth0_ApiIdentifier"];
 
                 //options.Events = new JwtBearerEvents
                 //{
@@ -93,6 +93,7 @@ namespace Artemis
 
             // Add our helper method(s)
             services.AddSingleton<IHelperMethods, HelperMethods>();
+            services.AddSingleton<IAzureBlobStorage, AzureBlobStorage>();
             services.AddSingleton<IImageUtil, ImageUtil>();
 
             // Register the Swagger generator, defining one or more Swagger documents
@@ -129,9 +130,9 @@ namespace Artemis
 
             services.Configure<Settings>(options =>
             {
-                options.ConnectionString = Configuration.GetSection("MongoConnection:ConnectionString").Value;
-                options.Database = Configuration.GetSection("MongoConnection:Database").Value;
-                options.Auth0Id = Configuration.GetSection("Auth0:Claims-nameidentifier").Value;
+                options.ConnectionString = Configuration.GetSection("Mongo_ConnectionString").Value;
+                options.Database = Configuration.GetSection("Mongo_Database").Value;
+                options.Auth0Id = Configuration.GetSection("Auth0_Claims_nameidentifier").Value;
             });
 
             services.AddControllers();
@@ -149,7 +150,6 @@ namespace Artemis
             }
 
             // Shows UseCors with CorsPolicyBuilder.
-            // Remember to remove Cors for production.
             app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();

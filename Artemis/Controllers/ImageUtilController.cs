@@ -1,10 +1,12 @@
 ﻿using Artemis.Interfaces;
+using Artemis.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Artemis.Controllers
@@ -18,9 +20,11 @@ namespace Artemis.Controllers
         private readonly IHelperMethods _helper;
         private readonly IImageUtil _imageUtil;
         private readonly long _maxImageNumber;
+        private readonly long _fileSizeLimit;
 
         public ImageUtilController(IConfiguration config, IHelperMethods helperMethods, IImageUtil imageUtil)
         {
+            _fileSizeLimit = config.GetValue<long>("FileSizeLimit");
             _maxImageNumber = config.GetValue<long>("MaxImageNumber");
             _helper = helperMethods;
             _imageUtil = imageUtil;
@@ -31,21 +35,26 @@ namespace Artemis.Controllers
         /// <summary>Upload images to the profile image folder.</summary>
         /// <param name="image"></param>
         /// <param name="title"></param>
-        /// <exception cref="ArgumentException">ModelState is not valid {ModelState.IsValid}. - image</exception>
-        /// <exception cref="ArgumentException">Image length is < 1 {image.Length}. - image</exception>
+        /// <exception cref="ArgumentException">User has exceeded maximum number of images. {currentUser.Images.Count}</exception>
         [HttpPost("~/UploadImage")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UploadImage([FromForm] IFormFile image, [FromForm] string title)
         {
-            if (image.Length < 0) throw new ArgumentException($"Image length is < 1 {image.Length}.", nameof(image));
-            if (string.IsNullOrEmpty(title)) throw new ArgumentException($"Image must have a title.", nameof(title));
-
             try
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
-                if (currentUser.Images.Count >= _maxImageNumber) return BadRequest();
+                if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
-                return Ok(_imageUtil.AddImageToCurrentUser(currentUser, image, title));
+                if (image.Length < 0 || image.Length > _fileSizeLimit)
+                {
+                    var limitMB = (_fileSizeLimit / 1000000);
+                    return BadRequest($"Image has exceeded the maximum size of {limitMB} MB."); 
+                }
+
+                await _imageUtil.AddImageToCurrentUser(currentUser, image, title);
+
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -53,25 +62,26 @@ namespace Artemis.Controllers
             }
         }
 
-        /// <summary>Deletes the image from current user.</summary>
+        /// <summary>Deletes the image for current user.</summary>
         /// <param name="imageId">The image identifier.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException">ModelState is not valid {ModelState.IsValid}. - imageId</exception>
-        [HttpPost("~/DeleteImage")]
-        public async Task<IActionResult> DeleteImage([FromBody] string[] imageIds)
+        [HttpPost("~/DeleteImagesForCurrentUser")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> DeleteImagesForCurrentUser([FromBody] string[] imageIds)
         {
-            //if (!ModelState.IsValid) throw new ArgumentException($"ModelState is not valid {ModelState.IsValid}.", nameof(imageIds)); unnecessary 
-
             try
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
                 foreach (var imageId in imageIds)
                 {
-                    if (!currentUser.Images.Any(i => i.ImageId != imageId)) return BadRequest();
+                    if (!currentUser.Images.Any(i => i.ImageId == imageId)) return BadRequest();
                 }
 
-                return Ok(_imageUtil.DeleteImagesFromCurrentUser(currentUser, imageIds));
+                await _imageUtil.DeleteImagesForCurrentUser(currentUser, imageIds);
+
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -82,22 +92,22 @@ namespace Artemis.Controllers
         /// <summary>Gets an images from CurrentUser by Image fileName.</summary>
         /// <param name="fileName">The image fileName.</param>
         /// <returns></returns>
-        [HttpGet("~/GetImageByFileName/{fileName}")]
-        public async Task<IActionResult> GetImageByFileName(string fileName)
-        {
-            try
-            {
-                var currentUser = await _helper.GetCurrentUserProfile(User);
+        //[HttpGet("~/GetImageByFileName/{fileName}")]
+        //public async Task<IActionResult> GetImageByFileName(string fileName)
+        //{
+        //    try
+        //    {
+        //        var currentUser = await _helper.GetCurrentUserProfile(User);
 
-                if (!currentUser.Images.Any(i => i.FileName == fileName)) return BadRequest();
+        //        if (!currentUser.Images.Any(i => i.FileName == fileName)) return BadRequest();
 
-                return Ok(await _imageUtil.GetImageByFileName(currentUser.ProfileId, fileName));
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //        return Ok(await _imageUtil.GetImageByFileName(currentUser.ProfileId, fileName));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
         #endregion
 
@@ -105,39 +115,47 @@ namespace Artemis.Controllers
 
         /// <summary>Gets all images from specified profileId.</summary>
         /// <param name="profileId">The profile identifier.</param>
+        /// <param name="imageSize">The size of image.</param>
         /// <returns></returns>
-        [HttpGet("~/GetProfileImages/{profileId}")]
-        public async Task<IActionResult> GetProfileImages(string profileId)
+        [HttpGet("~/GetProfileImages/{profileId},{imageSize}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetProfileImages(string profileId, ImageSizeEnum imageSize)
         {
             try
             {
                 if (string.IsNullOrEmpty(profileId)) return BadRequest();
 
-                return Ok(await _imageUtil.GetImagesAsync(profileId));
+                return Ok(await _imageUtil.GetImagesAsync(profileId, imageSize));
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Problem(ex.ToString());
             }
         }
 
         /// <summary>Gets an images from Profile by Image fileName.</summary>
         /// <param name="profileId">The profile identifier.</param>
         /// <param name="fileName">The image fileName.</param>
+        /// <param name="imageSize">The size of image.</param>
         /// <returns></returns>
-        [HttpGet("~/GetProfileImageByFileName/{profileId},{fileName}")]
-        public async Task<IActionResult> GetProfileImageByFileName(string profileId, string fileName)
+        [HttpGet("~/GetProfileImageByFileName/{profileId},{fileName},{imageSize}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetProfileImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
         {
             try
             {
                 if (string.IsNullOrEmpty(profileId)) return BadRequest();
                 if (string.IsNullOrEmpty(fileName)) return BadRequest();
 
-                return Ok(await _imageUtil.GetImageByFileName(profileId, fileName));
+                return Ok(await _imageUtil.GetImageByFileName(profileId, fileName, imageSize));
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Problem(ex.ToString());
             }
         }
 
@@ -149,6 +167,7 @@ namespace Artemis.Controllers
         /// <param name="profileIds">The profile identifiers.</param>
         /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
         [HttpPost("~/DeleteAllImagesForProfile")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteAllImagesForProfile([FromBody] string[] profileIds)
         {
             try
@@ -162,16 +181,18 @@ namespace Artemis.Controllers
                     _imageUtil.DeleteAllImagesForProfile(currentUser, profileId);
                 }
 
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Problem(ex.ToString());
             }
         }
 
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
         [HttpPost("~/DeleteAllImagesForCurrentUser")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> DeleteAllImagesForCurrentUser()
         {
             try
@@ -180,12 +201,15 @@ namespace Artemis.Controllers
 
                 if (currentUser.Admin) return BadRequest(); // Admins cannot delete themseleves.
 
+                if (currentUser.ProfileId == null) return BadRequest();
+
                 _imageUtil.DeleteAllImagesForCurrentUser(currentUser);
-                return Ok();
+
+                return NoContent();
             }
             catch (Exception ex)
             {
-                throw ex;
+                return Problem(ex.ToString());
             }
         }
 

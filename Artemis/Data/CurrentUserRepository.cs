@@ -35,12 +35,10 @@ namespace Artemis.Data
                 };
 
                 return await _context.CurrentUser.FindOneAndUpdateAsync(filter, update, options);
-
-
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -53,7 +51,7 @@ namespace Artemis.Data
         {
             try
             {
-                var imageModel = new ImageModel() { ImageId = Guid.NewGuid().ToString(), FileName = fileName, Title = title };
+                var imageModel = new ImageModel() { ImageId = Guid.NewGuid().ToString(), FileName = fileName, Title = title == "null" ? null : title  };
 
                 var filter = Builders<CurrentUser>
                                 .Filter.Eq(e => e.ProfileId, currentUser.ProfileId);
@@ -69,9 +67,9 @@ namespace Artemis.Data
 
                 return await _context.CurrentUser.FindOneAndUpdateAsync(filter, update, options);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -99,9 +97,9 @@ namespace Artemis.Data
 
                 return await _context.CurrentUser.FindOneAndUpdateAsync(filter, update, options);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
     }

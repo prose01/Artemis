@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 
@@ -7,28 +8,34 @@ namespace Artemis.Model
     public class CurrentUser : AbstractProfile
     {
         #region special properties
+
+        [BsonRepresentation(BsonType.String)]
+        public GenderType Gender { get; set; }
+
+        public string Languagecode { get; set; }
         public List<string> Bookmarks { get; set; }
         public List<ChatMember> ChatMemberslist { get; set; }
         public ProfileFilter ProfileFilter { get; set; }
-        public override Dictionary<string, DateTime> Visited { get; set; }
-        public override Dictionary<string, DateTime> IsBookmarked { get; set; }
+        public Dictionary<string, DateTime> Visited { get; set; }
+        public Dictionary<string, DateTime> IsBookmarked { get; set; }
+        public List<string> Likes { get; set; }
         #endregion
 
-        public override ObjectId _id { get; set; }
-        public override string Auth0Id { get; set; }
+        internal override ObjectId _id { get; set; }
+        public override string Auth0Id { internal get; set; }
         public override string ProfileId { get; set; }
         public override bool Admin { get; set; } = false;
         public override string Name { get; set; }
         public override DateTime CreatedOn { get; set; } = DateTime.Now;
         public override DateTime UpdatedOn { get; set; } = DateTime.Now;
         public override DateTime LastActive { get; set; } = DateTime.Now;
+        public override string Countrycode { get; set; }
         public override int? Age { get; set; } = null;
         public override int? Height { get; set; }
+        public override bool Contactable { get; set; } = true;
         public override string Description { get; set; }
         public override List<ImageModel> Images { get; set; }
         public override List<string> Tags { get; set; }
-        public override GenderType Gender { get; set; }
-        public override SexualOrientationType SexualOrientation { get; set; } // TODO: Should this be encrypted?
         public override BodyType Body { get; set; }
         public override SmokingHabitsType SmokingHabits { get; set; }
         public override HasChildrenType HasChildren { get; set; }

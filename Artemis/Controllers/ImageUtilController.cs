@@ -46,11 +46,21 @@ namespace Artemis.Controllers
 
                 if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
+                if (image.Length == 0)
+                {
+                    return BadRequest($"Image is empty.");
+                }
+
                 if (image.Length < 0 || image.Length > _fileSizeLimit)
                 {
-                    var limitMB = (_fileSizeLimit / 1000000);
-                    return BadRequest($"Image has exceeded the maximum size of {limitMB} MB."); 
+                    var megabyteSizeLimit = (_fileSizeLimit / 1048576);
+                    return BadRequest($"Image has exceeded the maximum size of {megabyteSizeLimit:N1} MB."); 
                 }
+
+                //if (!IsValidFileExtensionAndSignature) // TODO: Add checks for file extensions https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-input-validation#controls-users & https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/mvc/models/file-uploads/samples/3.x/SampleApp/Utilities/FileHelpers.cs
+                //{
+                //    return BadRequest($"Image type isn't permitted or the file's signature doesn't match the file's extension.");
+                //}
 
                 await _imageUtil.AddImageToCurrentUser(currentUser, image, title);
 

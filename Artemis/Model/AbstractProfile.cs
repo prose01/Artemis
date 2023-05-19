@@ -18,6 +18,8 @@ namespace Artemis.Model
         [StringLength(50, ErrorMessage = "Name length cannot be more than 50.")]
         public abstract string Name { get; set; }
 
+        public abstract AvatarModel Avatar { get; set; }
+
         [DataType(DataType.DateTime)]
         public abstract DateTime CreatedOn { get; set; }
 

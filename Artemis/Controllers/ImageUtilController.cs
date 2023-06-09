@@ -46,11 +46,21 @@ namespace Artemis.Controllers
 
                 if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
+                if (image.Length == 0)
+                {
+                    return BadRequest($"Image is empty.");
+                }
+
                 if (image.Length < 0 || image.Length > _fileSizeLimit)
                 {
-                    var limitMB = (_fileSizeLimit / 1000000);
-                    return BadRequest($"Image has exceeded the maximum size of {limitMB} MB."); 
+                    var megabyteSizeLimit = (_fileSizeLimit / 1048576);
+                    return BadRequest($"Image has exceeded the maximum size of {megabyteSizeLimit:N1} MB."); 
                 }
+
+                //if (!IsValidFileExtensionAndSignature) // TODO: Add checks for file extensions https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-input-validation#controls-users & https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/mvc/models/file-uploads/samples/3.x/SampleApp/Utilities/FileHelpers.cs
+                //{
+                //    return BadRequest($"Image type isn't permitted or the file's signature doesn't match the file's extension.");
+                //}
 
                 await _imageUtil.AddImageToCurrentUser(currentUser, image, title);
 
@@ -113,27 +123,27 @@ namespace Artemis.Controllers
 
         #region Profile
 
-        /// <summary>Gets all images from specified profileId.</summary>
-        /// <param name="profileId">The profile identifier.</param>
-        /// <param name="imageSize">The size of image.</param>
-        /// <returns></returns>
-        [HttpGet("~/GetProfileImages/{profileId},{imageSize}")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetProfileImages(string profileId, ImageSizeEnum imageSize)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(profileId)) return BadRequest();
+        ///// <summary>Gets all images from specified profileId.</summary>
+        ///// <param name="profileId">The profile identifier.</param>
+        ///// <param name="imageSize">The size of image.</param>
+        ///// <returns></returns>
+        //[HttpGet("~/GetProfileImages/{profileId},{imageSize}")]
+        //[ProducesResponseType((int)HttpStatusCode.OK)]
+        //[ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        //[ProducesResponseType((int)HttpStatusCode.NotFound)]
+        //public async Task<IActionResult> GetProfileImages(string profileId, ImageSizeEnum imageSize)
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(profileId)) return BadRequest();
 
-                return Ok(await _imageUtil.GetImagesAsync(profileId, imageSize));
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.ToString());
-            }
-        }
+        //        return Ok(await _imageUtil.GetImagesAsync(profileId, imageSize));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Problem(ex.ToString());
+        //    }
+        //}
 
         /// <summary>Gets an images from Profile by Image fileName.</summary>
         /// <param name="profileId">The profile identifier.</param>

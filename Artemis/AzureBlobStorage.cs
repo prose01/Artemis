@@ -75,35 +75,35 @@ namespace Artemis
             }
         }
 
-        public async Task<List<Stream>> DownloadAllImagesAsync(string profileId, ImageSizeEnum imageSize)
-        {
-            try
-            {
-                //var path = Path.Combine(profileId, imageSize.ToString());
+        //public async Task<List<Stream>> DownloadAllImagesAsync(string profileId, ImageSizeEnum imageSize)
+        //{
+        //    try
+        //    {
+        //        //var path = Path.Combine(profileId, imageSize.ToString());
 
-                List<Stream> streams = new List<Stream>();
+        //        List<Stream> streams = new List<Stream>();
 
-                // Get a reference to a blob
-                var blobItems = _container.GetBlobsAsync(prefix: profileId + "/" + imageSize.ToString() + "/");
+        //        // Get a reference to a blob
+        //        var blobItems = _container.GetBlobsAsync(prefix: profileId + "/" + imageSize.ToString() + "/");
 
-                // Get everything Async
-                await foreach (BlobItem blobItem in blobItems)
-                {
-                    BlobClient blobClient = _container.GetBlobClient(blobItem.Name);
+        //        // Get everything Async
+        //        await foreach (BlobItem blobItem in blobItems)
+        //        {
+        //            BlobClient blobClient = _container.GetBlobClient(blobItem.Name);
 
-                    // Download the blob's contents and add it to list
-                    BlobDownloadInfo download = await blobClient.DownloadAsync();
-                    streams.Add(download.Content);
-                }
+        //            // Download the blob's contents and add it to list
+        //            BlobDownloadInfo download = await blobClient.DownloadAsync();
+        //            streams.Add(download.Content);
+        //        }
 
-                return streams;
+        //        return streams;
 
-            }
-            catch
-            {
-                throw;
-            }
-        }
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }
+        //}
 
         public async Task DeleteAllImagesAsync(string profileId)
         {

@@ -9,7 +9,7 @@ namespace Artemis.Model
         public List<int?> Height { get; set; }
         public string Description { get; set; }
         public List<string> Tags { get; set; }
-        public GenderType Gender { get; set; }
+        public GenderType? Gender { get; set; }
         public BodyType Body { get; set; }
         public SmokingHabitsType SmokingHabits { get; set; }
         public HasChildrenType HasChildren { get; set; }

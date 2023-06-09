@@ -12,6 +12,9 @@ namespace Artemis.Model
         [BsonRepresentation(BsonType.String)]
         public GenderType Gender { get; set; }
 
+        [BsonRepresentation(BsonType.String)]
+        public List<GenderType> Seeking { get; set; }
+
         public string Languagecode { get; set; }
         public List<string> Bookmarks { get; set; }
         public List<ChatMember> ChatMemberslist { get; set; }
@@ -19,6 +22,8 @@ namespace Artemis.Model
         public Dictionary<string, DateTime> Visited { get; set; }
         public Dictionary<string, DateTime> IsBookmarked { get; set; }
         public List<string> Likes { get; set; }
+        public Dictionary<string, DateTime> Complains { internal get; set; }
+        public List<string> Groups { get; set; }
         #endregion
 
         internal override ObjectId _id { get; set; }
@@ -26,6 +31,7 @@ namespace Artemis.Model
         public override string ProfileId { get; set; }
         public override bool Admin { get; set; } = false;
         public override string Name { get; set; }
+        public override AvatarModel Avatar { get; set; }
         public override DateTime CreatedOn { get; set; } = DateTime.Now;
         public override DateTime UpdatedOn { get; set; } = DateTime.Now;
         public override DateTime LastActive { get; set; } = DateTime.Now;

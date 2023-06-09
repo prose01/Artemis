@@ -123,27 +123,27 @@ namespace Artemis.Controllers
 
         #region Profile
 
-        /// <summary>Gets all images from specified profileId.</summary>
-        /// <param name="profileId">The profile identifier.</param>
-        /// <param name="imageSize">The size of image.</param>
-        /// <returns></returns>
-        [HttpGet("~/GetProfileImages/{profileId},{imageSize}")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetProfileImages(string profileId, ImageSizeEnum imageSize)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(profileId)) return BadRequest();
+        ///// <summary>Gets all images from specified profileId.</summary>
+        ///// <param name="profileId">The profile identifier.</param>
+        ///// <param name="imageSize">The size of image.</param>
+        ///// <returns></returns>
+        //[HttpGet("~/GetProfileImages/{profileId},{imageSize}")]
+        //[ProducesResponseType((int)HttpStatusCode.OK)]
+        //[ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        //[ProducesResponseType((int)HttpStatusCode.NotFound)]
+        //public async Task<IActionResult> GetProfileImages(string profileId, ImageSizeEnum imageSize)
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(profileId)) return BadRequest();
 
-                return Ok(await _imageUtil.GetImagesAsync(profileId, imageSize));
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.ToString());
-            }
-        }
+        //        return Ok(await _imageUtil.GetImagesAsync(profileId, imageSize));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Problem(ex.ToString());
+        //    }
+        //}
 
         /// <summary>Gets an images from Profile by Image fileName.</summary>
         /// <param name="profileId">The profile identifier.</param>

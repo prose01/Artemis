@@ -108,33 +108,33 @@ namespace Artemis
             }
         }
 
-        /// <summary>Gets all images from specified profileId.</summary>
-        /// <param name="profileId">The profile identifier.</param>
-        /// <returns></returns>
-        public async Task<List<byte[]>> GetImagesAsync(string profileId, ImageSizeEnum imageSize)
-        {
-            List<byte[]> images = new List<byte[]>();
+        ///// <summary>Gets all images from specified profileId.</summary>
+        ///// <param name="profileId">The profile identifier.</param>
+        ///// <returns></returns>
+        //public async Task<List<byte[]>> GetImagesAsync(string profileId, ImageSizeEnum imageSize)
+        //{
+        //    List<byte[]> images = new List<byte[]>();
 
-            try
-            {
-                List<Stream> streams = await _azureBlobStorage.DownloadAllImagesAsync(profileId, imageSize);
+        //    try
+        //    {
+        //        List<Stream> streams = await _azureBlobStorage.DownloadAllImagesAsync(profileId, imageSize);
 
-                foreach (var stream in streams)
-                {
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        stream.CopyTo(ms);
-                        images.Add(ms.ToArray());
-                    }
-                }
+        //        foreach (var stream in streams)
+        //        {
+        //            using (MemoryStream ms = new MemoryStream())
+        //            {
+        //                stream.CopyTo(ms);
+        //                images.Add(ms.ToArray());
+        //            }
+        //        }
 
-                return images;
-            }
-            catch
-            {
-                throw;
-            }
-        }
+        //        return images;
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }
+        //}
 
         /// <summary>Gets an images from CurrentUser by Image fileName.</summary>
         /// <param name="currentUser">The current user.</param>

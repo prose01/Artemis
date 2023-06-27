@@ -99,9 +99,9 @@ namespace Artemis.Controllers
             }
         }
 
-        /// <summary>Gets an images from CurrentUser by Image fileName.</summary>
-        /// <param name="fileName">The image fileName.</param>
-        /// <returns></returns>
+        ///// <summary>Gets an images from CurrentUser by Image fileName.</summary>
+        ///// <param name="fileName">The image fileName.</param>
+        ///// <returns></returns>
         //[HttpGet("~/GetImageByFileName/{fileName}")]
         //public async Task<IActionResult> GetImageByFileName(string fileName)
         //{
@@ -145,29 +145,29 @@ namespace Artemis.Controllers
         //    }
         //}
 
-        /// <summary>Gets an images from Profile by Image fileName.</summary>
-        /// <param name="profileId">The profile identifier.</param>
-        /// <param name="fileName">The image fileName.</param>
-        /// <param name="imageSize">The size of image.</param>
-        /// <returns></returns>
-        [HttpGet("~/GetProfileImageByFileName/{profileId},{fileName},{imageSize}")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetProfileImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(profileId)) return BadRequest();
-                if (string.IsNullOrEmpty(fileName)) return BadRequest();
+        ///// <summary>Gets an images from Profile by Image fileName.</summary>
+        ///// <param name="profileId">The profile identifier.</param>
+        ///// <param name="fileName">The image fileName.</param>
+        ///// <param name="imageSize">The size of image.</param>
+        ///// <returns></returns>
+        //[HttpGet("~/GetProfileImageByFileName/{profileId},{fileName},{imageSize}")]
+        //[ProducesResponseType((int)HttpStatusCode.OK)]
+        //[ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        //[ProducesResponseType((int)HttpStatusCode.NotFound)]
+        //public async Task<IActionResult> GetProfileImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(profileId)) return BadRequest();
+        //        if (string.IsNullOrEmpty(fileName)) return BadRequest();
 
-                return Ok(await _imageUtil.GetImageByFileName(profileId, fileName, imageSize));
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.ToString());
-            }
-        }
+        //        return Ok(await _imageUtil.GetImageByFileName(profileId, fileName, imageSize));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Problem(ex.ToString());
+        //    }
+        //}
 
         #endregion
 

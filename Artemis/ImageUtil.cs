@@ -136,27 +136,27 @@ namespace Artemis
         //    }
         //}
 
-        /// <summary>Gets an images from CurrentUser by Image fileName.</summary>
-        /// <param name="currentUser">The current user.</param>
-        /// <param name="fileName">The image fileName.</param>
-        /// <returns></returns>
-        public async Task<byte[]> GetImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
-        {
-            try
-            {
-                Stream stream = await _azureBlobStorage.DownloadImageByFileNameAsync(profileId, Path.Combine(imageSize.ToString(), fileName));
+        ///// <summary>Gets an images from CurrentUser by Image fileName.</summary>
+        ///// <param name="currentUser">The current user.</param>
+        ///// <param name="fileName">The image fileName.</param>
+        ///// <returns></returns>
+        //public async Task<byte[]> GetImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize)
+        //{
+        //    try
+        //    {
+        //        Stream stream = await _azureBlobStorage.DownloadImageByFileNameAsync(profileId, Path.Combine(imageSize.ToString(), fileName));
 
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    stream.CopyTo(ms);
-                    return ms.ToArray();
-                }
-            }
-            catch
-            {
-                throw;
-            }
-        }
+        //        using (MemoryStream ms = new MemoryStream())
+        //        {
+        //            stream.CopyTo(ms);
+        //            return ms.ToArray();
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }
+        //}
 
         /// <summary>Deletes all images for profile. There is no going back!</summary>
         /// <param name="currentUser">The CurrentUser.</param>

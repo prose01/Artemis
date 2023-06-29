@@ -1,9 +1,7 @@
 ﻿using Artemis.Interfaces;
-using Artemis.Model;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 

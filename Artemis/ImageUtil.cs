@@ -45,16 +45,16 @@ namespace Artemis
                 // Save original image
                 using (var stream = image.OpenReadStream())
                 {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.large.ToString(), fileName[0] + '.' + format[1]), stream);
+                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(fileName[0] + '.' + format[1]), stream);
                 }
 
-                // Resize image to small and save 
-                var small = this.ConvertImageToByteArray(image, 150, 150);
+                //// Resize image to small and save 
+                //var small = this.ConvertImageToByteArray(image, 150, 150);
 
-                using (var stream = new MemoryStream(small))
-                {
-                    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.small.ToString(), fileName[0] + '.' + format[1]), stream);
-                }
+                //using (var stream = new MemoryStream(small))
+                //{
+                //    await _azureBlobStorage.UploadAsync(currentUser.ProfileId, Path.Combine(ImageSizeEnum.small.ToString(), fileName[0] + '.' + format[1]), stream);
+                //}
 
                 // Resize image to medium and save 
                 //var medium = this.ConvertImageToByteArray(image, 300, 300);
@@ -196,94 +196,94 @@ namespace Artemis
             }
         }
 
-        /// Taken from https://github.com/SixLabors/ImageSharp
-        /// https://docs.sixlabors.com/articles/imagesharp/index.html?tabs=tabid-1
-        /// <summary>Converts the image to byte array.</summary>
-        /// <param name="inputImage">The input image.</param>
-        /// <param name="maxWidth">The maximum width.</param>
-        /// <param name="maxHeight">The maximum height.</param>
-        /// <returns></returns>
-        private byte[] ConvertImageToByteArray(IFormFile inputImage, int maxWidth = 50, int maxHeight = 100)
-        {
-            try
-            {
-                byte[] result = null;
+        ///// Taken from https://github.com/SixLabors/ImageSharp
+        ///// https://docs.sixlabors.com/articles/imagesharp/index.html?tabs=tabid-1
+        ///// <summary>Converts the image to byte array.</summary>
+        ///// <param name="inputImage">The input image.</param>
+        ///// <param name="maxWidth">The maximum width.</param>
+        ///// <param name="maxHeight">The maximum height.</param>
+        ///// <returns></returns>
+        //private byte[] ConvertImageToByteArray(IFormFile inputImage, int maxWidth = 50, int maxHeight = 100)
+        //{
+        //    try
+        //    {
+        //        byte[] result = null;
 
-                // memory stream
-                using (var memoryStream = new MemoryStream())
+        //        // memory stream
+        //        using (var memoryStream = new MemoryStream())
 
-                // filestream
-                using (var image = Image.Load(inputImage.OpenReadStream())) // IFormFile inputImage
-                {
-                    //var before = memoryStream.Length; Removed this, assuming you are using for debugging?
-                    //var beforeMutations = image.Size();
+        //        // filestream
+        //        using (var image = Image.Load(inputImage.OpenReadStream())) // IFormFile inputImage
+        //        {
+        //            //var before = memoryStream.Length; Removed this, assuming you are using for debugging?
+        //            //var beforeMutations = image.Size();
 
-                    var width = image.Width;
-                    var height = image.Height;
+        //            var width = image.Width;
+        //            var height = image.Height;
 
-                    if (width >= maxWidth && height >= maxHeight)
-                    {
+        //            if (width >= maxWidth && height >= maxHeight)
+        //            {
 
-                        int newWidth;
-                        int newHeight;
+        //                int newWidth;
+        //                int newHeight;
 
-                        if (width > height)
-                        {
-                            newHeight = height * (maxWidth / width);
-                            newWidth = maxWidth;
-                        }
-                        else
-                        {
-                            newWidth = width * (maxHeight / height);
-                            newHeight = maxHeight;
-                        }
+        //                if (width > height)
+        //                {
+        //                    newHeight = height * (maxWidth / width);
+        //                    newWidth = maxWidth;
+        //                }
+        //                else
+        //                {
+        //                    newWidth = width * (maxHeight / height);
+        //                    newHeight = maxHeight;
+        //                }
 
-                        // dummy resize options
-                        //int width = 50;
-                        //int height = 100;
-                        IResampler sampler = KnownResamplers.MitchellNetravali;
-                        bool compand = true;
-                        ResizeMode mode = ResizeMode.BoxPad;
+        //                // dummy resize options
+        //                //int width = 50;
+        //                //int height = 100;
+        //                IResampler sampler = KnownResamplers.MitchellNetravali;
+        //                bool compand = true;
+        //                ResizeMode mode = ResizeMode.BoxPad;
 
-                        // init resize object
-                        var resizeOptions = new ResizeOptions
-                        {
-                            Size = new Size(newWidth, newHeight),
-                            Sampler = sampler,
-                            Compand = compand,
-                            Mode = mode
-                        };
+        //                // init resize object
+        //                var resizeOptions = new ResizeOptions
+        //                {
+        //                    Size = new Size(newWidth, newHeight),
+        //                    Sampler = sampler,
+        //                    Compand = compand,
+        //                    Mode = mode
+        //                };
 
-                        // mutate image
-                        image.Mutate(x => x
-                             .Resize(resizeOptions));
+        //                // mutate image
+        //                image.Mutate(x => x
+        //                     .Resize(resizeOptions));
 
-                        //var afterMutations = image.Size();
-                    }
+        //                //var afterMutations = image.Size();
+        //            }
 
-                    //Encode here for quality
-                    var encoder = new JpegEncoder()
-                    {
-                        Quality = 75 //Use variable to set between 5-30 based on your requirements
-                    };
+        //            //Encode here for quality
+        //            var encoder = new JpegEncoder()
+        //            {
+        //                Quality = 75 //Use variable to set between 5-30 based on your requirements
+        //            };
 
-                    //This saves to the memoryStream with encoder
-                    image.Save(memoryStream, encoder);
-                    memoryStream.Position = 0; // The position needs to be reset.
+        //            //This saves to the memoryStream with encoder
+        //            image.Save(memoryStream, encoder);
+        //            memoryStream.Position = 0; // The position needs to be reset.
 
-                    // prepare result to byte[]
-                    result = memoryStream.ToArray();
+        //            // prepare result to byte[]
+        //            result = memoryStream.ToArray();
 
-                    //var after = memoryStream.Length; // kind of not needed.
+        //            //var after = memoryStream.Length; // kind of not needed.
 
-                    return result;
-                }
+        //            return result;
+        //        }
 
-            }
-            catch
-            {
-                throw;
-            }
-        }
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }
+        //}
     }
 }

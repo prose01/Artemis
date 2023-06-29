@@ -54,7 +54,7 @@ namespace Artemis.Controllers
                 if (image.Length < 0 || image.Length > _fileSizeLimit)
                 {
                     var megabyteSizeLimit = (_fileSizeLimit / 1048576);
-                    return BadRequest($"Image has exceeded the maximum size of {megabyteSizeLimit:N1} MB."); 
+                    return BadRequest($"Image has exceeded the maximum size of {megabyteSizeLimit:N1} MB.");
                 }
 
                 //if (!IsValidFileExtensionAndSignature) // TODO: Add checks for file extensions https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-input-validation#controls-users & https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/mvc/models/file-uploads/samples/3.x/SampleApp/Utilities/FileHelpers.cs

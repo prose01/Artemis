@@ -188,7 +188,7 @@ namespace Artemis.Controllers
 
                 foreach (var profileId in profileIds)
                 {
-                    _imageUtil.DeleteAllImagesForProfile(currentUser, profileId);
+                    await _imageUtil.DeleteAllImagesForProfile(currentUser, profileId);
                 }
 
                 return NoContent();
@@ -213,7 +213,7 @@ namespace Artemis.Controllers
 
                 if (currentUser.ProfileId == null) return BadRequest();
 
-                _imageUtil.DeleteAllImagesForCurrentUser(currentUser);
+                await _imageUtil.DeleteAllImagesForCurrentUser(currentUser);
 
                 return NoContent();
             }

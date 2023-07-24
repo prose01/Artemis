@@ -163,7 +163,7 @@ namespace Artemis
         /// <param name="profileId">The profile identifier.</param>
         /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
         /// <exception cref="ArgumentException">ProfileId is missing. {profileId}</exception>
-        public void DeleteAllImagesForProfile(CurrentUser currentUser, string profileId)
+        public async Task DeleteAllImagesForProfile(CurrentUser currentUser, string profileId)
         {
             if (!currentUser.Admin) throw new Exception("You don't have admin rights to delete other people's images.");
 
@@ -171,7 +171,7 @@ namespace Artemis
 
             try
             {
-                _azureBlobStorage.DeleteAllImagesAsync(profileId);
+                await _azureBlobStorage.DeleteAllImagesAsync(profileId);
             }
             catch
             {
@@ -182,13 +182,13 @@ namespace Artemis
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
         /// <param name="currentUser">The CurrentUser.</param>
         /// <exception cref="ArgumentException">ProfileId is missing. {currentUser.ProfileId}</exception>
-        public void DeleteAllImagesForCurrentUser(CurrentUser currentUser)
+        public async Task DeleteAllImagesForCurrentUser(CurrentUser currentUser)
         {
             if (currentUser.ProfileId == null) throw new ArgumentException("ProfileId is missing.");
 
             try
             {
-                _azureBlobStorage.DeleteAllImagesAsync(currentUser.ProfileId);
+                await _azureBlobStorage.DeleteAllImagesAsync(currentUser.ProfileId);
             }
             catch
             {

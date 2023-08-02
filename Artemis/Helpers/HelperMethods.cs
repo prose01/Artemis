@@ -26,7 +26,7 @@ namespace Artemis.Helpers
         {
             var auth0Id = user.Claims.FirstOrDefault(c => c.Type == _nameidentifier)?.Value;
 
-            return await _profileRepository.GetCurrentProfileByAuth0Id(auth0Id) ?? throw new ArgumentException($"User unkown.", nameof(user));
+            return await _profileRepository.GetCurrentProfileByAuth0Id(auth0Id);
         }
     }
 }

@@ -44,6 +44,11 @@ namespace Artemis.Controllers
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
+                if (currentUser == null || currentUser.Name == null)
+                {
+                    return NotFound();
+                }
+
                 if (currentUser.Images.Count >= _maxImageNumber) throw new ArgumentException($"User has exceeded maximum number of images.", nameof(currentUser.Images.Count));
 
                 if (image.Length == 0)
@@ -83,6 +88,11 @@ namespace Artemis.Controllers
             try
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
+
+                if (currentUser == null || currentUser.Name == null)
+                {
+                    return NotFound();
+                }
 
                 foreach (var imageId in imageIds)
                 {
@@ -184,6 +194,11 @@ namespace Artemis.Controllers
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
+                if (currentUser == null || currentUser.Name == null)
+                {
+                    return NotFound();
+                }
+
                 if (!currentUser.Admin) throw new Exception("You don't have admin rights to delete other people's images.");
 
                 foreach (var profileId in profileIds)
@@ -208,6 +223,11 @@ namespace Artemis.Controllers
             try
             {
                 var currentUser = await _helper.GetCurrentUserProfile(User);
+
+                if (currentUser == null || currentUser.Name == null)
+                {
+                    return NotFound();
+                }
 
                 if (currentUser.Admin) return BadRequest(); // Admins cannot delete themseleves.
 

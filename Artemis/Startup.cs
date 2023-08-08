@@ -10,10 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Artemis
 {
@@ -65,24 +62,6 @@ namespace Artemis
             {
                 options.Authority = domain;
                 options.Audience = Configuration["Auth0_ApiIdentifier"];
-
-                //options.Events = new JwtBearerEvents
-                //{
-                //    OnMessageReceived = context =>
-                //    {
-                //        var accessToken = context.Request.Query["access_token"];
-
-                //        // If the request is for our hub...
-                //        var path = context.HttpContext.Request.Path;
-                //        if (!string.IsNullOrEmpty(accessToken) &&
-                //            (path.StartsWithSegments("/chatHub")))
-                //        {
-                //            // Read the token out of the query string
-                //            context.Token = accessToken;
-                //        }
-                //        return Task.CompletedTask;
-                //    }
-                //};
             });
 
             // register the scope authorization handler
@@ -109,22 +88,43 @@ namespace Artemis
                     //License = new Swashbuckle.AspNetCore.Swagger.License { Name = "Use under LICX", Url = "http://Artemis.com" }
                 });
 
-                // Define the ApiKey scheme that's in use (i.e. Implicit Flow)
-                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                //// Define the ApiKey scheme that's in use (i.e. Implicit Flow)
+                //c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                //{
+                //    Type = SecuritySchemeType.ApiKey,
+                //    Flows = new OpenApiOAuthFlows
+                //    {
+                //        Implicit = new OpenApiOAuthFlow
+                //        {
+                //            AuthorizationUrl = new Uri("/auth-server/connect/authorize", UriKind.Relative),
+                //            Scopes = new Dictionary<string, string>
+                //            {
+                //                { "readAccess", "Access read operations" },
+                //                { "writeAccess", "Access write operations" }
+                //            }
+                //        }
+                //    }
+                //});
+
+                var securitySchema = new OpenApiSecurityScheme
                 {
-                    Type = SecuritySchemeType.ApiKey,
-                    Flows = new OpenApiOAuthFlows
+                    Description = "Using the Authorization header with the Bearer scheme.",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    Reference = new OpenApiReference
                     {
-                        Implicit = new OpenApiOAuthFlow
-                        {
-                            AuthorizationUrl = new Uri("/auth-server/connect/authorize", UriKind.Relative),
-                            Scopes = new Dictionary<string, string>
-                            {
-                                { "readAccess", "Access read operations" },
-                                { "writeAccess", "Access write operations" }
-                            }
-                        }
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
                     }
+                };
+
+                c.AddSecurityDefinition("Bearer", securitySchema);
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { securitySchema, new[] { "Bearer" } }
                 });
             });
 
@@ -148,7 +148,6 @@ namespace Artemis
             {
                 app.UseDeveloperExceptionPage();
 
-
                 // Enable middleware to serve generated Swagger as a JSON endpoint.
                 app.UseSwagger();
 
@@ -157,10 +156,11 @@ namespace Artemis
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Artemis V1");
                 });
+
+                app.UseCors("CorsPolicy");
             }
 
             // Shows UseCors with CorsPolicyBuilder.
-            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
 

@@ -1,5 +1,4 @@
 ﻿using Artemis.Interfaces;
-using Artemis.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -183,12 +182,12 @@ namespace Artemis.Controllers
 
         #region Admin methods.
 
-        /// <summary>Deletes all images for profile. There is no going back!</summary>
+        /// <summary>Deletes all images for profiles. There is no going back!</summary>
         /// <param name="profileIds">The profile identifiers.</param>
         /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
-        [HttpPost("~/DeleteAllImagesForProfile")]
+        [HttpPost("~/DeleteAllImagesForProfiles")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> DeleteAllImagesForProfile([FromBody] string[] profileIds)
+        public async Task<IActionResult> DeleteAllImagesForProfiles([FromBody] string[] profileIds)
         {
             try
             {

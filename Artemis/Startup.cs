@@ -35,7 +35,7 @@ namespace Artemis
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
-                    builder => builder.WithOrigins("http://localhost:4200")
+                    builder => builder.WithOrigins("http://localhost:4200", "http://localhost:4200/manifest.webmanifest")
                                 .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD")
                                 .AllowAnyHeader()
                                 .AllowCredentials()
@@ -46,10 +46,6 @@ namespace Artemis
             services.AddMvc().AddJsonOptions(options => {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-
-            //// Add SignalR.
-            //services
-            //    .AddSignalR();
 
             // Add authentication.
             string domain = $"https://{Configuration["Auth0_Domain"]}/";
@@ -82,29 +78,8 @@ namespace Artemis
                 {
                     Version = "v1",
                     Title = "Artemis API",
-                    Description = "A simple example Artemis API",
-                    //TermsOfService = "None",
-                    //Contact = new Contact { Name = "Peter Rose", Email = "", Url = "http://Artemis.com/" },
-                    //License = new Swashbuckle.AspNetCore.Swagger.License { Name = "Use under LICX", Url = "http://Artemis.com" }
+                    Description = "A simple example Artemis API"
                 });
-
-                //// Define the ApiKey scheme that's in use (i.e. Implicit Flow)
-                //c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-                //{
-                //    Type = SecuritySchemeType.ApiKey,
-                //    Flows = new OpenApiOAuthFlows
-                //    {
-                //        Implicit = new OpenApiOAuthFlow
-                //        {
-                //            AuthorizationUrl = new Uri("/auth-server/connect/authorize", UriKind.Relative),
-                //            Scopes = new Dictionary<string, string>
-                //            {
-                //                { "readAccess", "Access read operations" },
-                //                { "writeAccess", "Access write operations" }
-                //            }
-                //        }
-                //    }
-                //});
 
                 var securitySchema = new OpenApiSecurityScheme
                 {
@@ -159,8 +134,6 @@ namespace Artemis
 
                 app.UseCors("CorsPolicy");
             }
-
-            // Shows UseCors with CorsPolicyBuilder.
 
             app.UseHttpsRedirection();
 

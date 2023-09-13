@@ -1,4 +1,5 @@
-﻿using Artemis.Interfaces;
+﻿using Artemis.Infrastructure;
+using Artemis.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -76,7 +77,7 @@ namespace Artemis.Controllers
             }
         }
 
-        /// <summary>Deletes the image for current user.</summary>
+        /// <summary>Deletes the image(s) for current user.</summary>
         /// <param name="imageId">The image identifier.</param>
         /// <returns></returns>
         [HttpPost("~/DeleteImagesForCurrentUser")]
@@ -184,13 +185,18 @@ namespace Artemis.Controllers
 
         /// <summary>Deletes all images for profiles. There is no going back!</summary>
         /// <param name="profileIds">The profile identifiers.</param>
-        /// <exception cref="Exception">You don't have admin rights to delete other people's images.</exception>
+        /// <exception cref="ArgumentException">ProfileIds is either null {profileIds} or length is < 1 {profileIds.Length}. {profileIds}</exception>
+        /// <exception cref="ArgumentException">You don't have admin rights to delete other people's images.</exception>
+        [NoCache]
         [HttpPost("~/DeleteAllImagesForProfiles")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> DeleteAllImagesForProfiles([FromBody] string[] profileIds)
         {
             try
             {
+                if (profileIds == null || profileIds.Length < 1) throw new ArgumentException($"ProfileIds is either null {profileIds} or length is < 1 {profileIds.Length}.", nameof(profileIds));
+
                 var currentUser = await _helper.GetCurrentUserProfile(User);
 
                 if (currentUser == null || currentUser.Name == null)
@@ -198,7 +204,7 @@ namespace Artemis.Controllers
                     return NotFound();
                 }
 
-                if (!currentUser.Admin) throw new Exception("You don't have admin rights to delete other people's images.");
+                if (!currentUser.Admin) throw new ArgumentException("You don't have admin rights to delete other people's images.");
 
                 foreach (var profileId in profileIds)
                 {
@@ -214,7 +220,9 @@ namespace Artemis.Controllers
         }
 
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
+        /// <exception cref="ArgumentException">Admins cannot delete themselves.</exception>
         [HttpPost("~/DeleteAllImagesForCurrentUser")]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> DeleteAllImagesForCurrentUser()
@@ -228,7 +236,7 @@ namespace Artemis.Controllers
                     return NotFound();
                 }
 
-                if (currentUser.Admin) return BadRequest(); // Admins cannot delete themseleves.
+                if (currentUser.Admin) throw new ArgumentException($"Admins cannot delete themselves.");
 
                 if (currentUser.ProfileId == null) return BadRequest();
 

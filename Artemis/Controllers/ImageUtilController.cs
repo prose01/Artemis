@@ -36,6 +36,7 @@ namespace Artemis.Controllers
         /// <param name="image"></param>
         /// <param name="title"></param>
         /// <exception cref="ArgumentException">User has exceeded maximum number of images. {currentUser.Images.Count}</exception>
+        [NoCache]
         [HttpPost("~/UploadImage")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UploadImage([FromForm] IFormFile image, [FromForm] string title)
@@ -80,6 +81,7 @@ namespace Artemis.Controllers
         /// <summary>Deletes the image(s) for current user.</summary>
         /// <param name="imageId">The image identifier.</param>
         /// <returns></returns>
+        [NoCache]
         [HttpPost("~/DeleteImagesForCurrentUser")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -221,6 +223,7 @@ namespace Artemis.Controllers
 
         /// <summary>Deletes all images for CurrentUser. There is no going back!</summary>
         /// <exception cref="ArgumentException">Admins cannot delete themselves.</exception>
+        [NoCache]
         [HttpPost("~/DeleteAllImagesForCurrentUser")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]

@@ -143,6 +143,7 @@ namespace Artemis
             // Enable Authorization
             app.UseAuthorization();
 
+            // Add endpoints 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

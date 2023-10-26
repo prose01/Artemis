@@ -23,7 +23,7 @@ namespace Artemis.Model
         public Dictionary<string, DateTime> IsBookmarked { get; set; }
         public List<string> Likes { get; set; }
         public Dictionary<string, DateTime> Complains { internal get; set; }
-        public List<string> Groups { get; set; }
+        public Dictionary<string, DateTime?> Groups { get; set; }
         #endregion
 
         internal override ObjectId _id { get; set; }

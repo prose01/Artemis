@@ -31,6 +31,7 @@ namespace Artemis.Data
 
                 var options = new FindOneAndUpdateOptions<CurrentUser>
                 {
+                    Projection = this.GetProjection(),
                     ReturnDocument = ReturnDocument.After
                 };
 
@@ -47,7 +48,7 @@ namespace Artemis.Data
         /// <param name="fileName">Name of the file.</param>
         /// <param name="title">The title.</param>
         /// <returns></returns>
-        public async Task<CurrentUser> AddImageToCurrentUser(CurrentUser currentUser, string fileName, string title)
+        public async Task AddImageToCurrentUser(CurrentUser currentUser, string fileName, string title)
         {
             try
             {
@@ -60,12 +61,7 @@ namespace Artemis.Data
                                 .Update.Push(e => e.Images, imageModel)
                                 .Set(e => e.UpdatedOn, DateTime.Now);
 
-                var options = new FindOneAndUpdateOptions<CurrentUser>
-                {
-                    ReturnDocument = ReturnDocument.After
-                };
-
-                return await _context.CurrentUser.FindOneAndUpdateAsync(filter, update, options);
+                await _context.CurrentUser.UpdateOneAsync(filter, update);
             }
             catch
             {
@@ -77,7 +73,7 @@ namespace Artemis.Data
         /// <param name="currentUser">The current user.</param>
         /// <param name="imageId">The image identifier.</param>
         /// <returns></returns>
-        public async Task<CurrentUser> RemoveImageFromCurrentUser(CurrentUser currentUser, string imageId)
+        public async Task RemoveImageFromCurrentUser(CurrentUser currentUser, string imageId)
         {
             try
             {
@@ -90,17 +86,53 @@ namespace Artemis.Data
                                 .Update.PullAll(e => e.Images, images)
                                 .Set(e => e.UpdatedOn, DateTime.Now);
 
-                var options = new FindOneAndUpdateOptions<CurrentUser>
-                {
-                    ReturnDocument = ReturnDocument.After
-                };
-
-                return await _context.CurrentUser.FindOneAndUpdateAsync(filter, update, options);
+                await _context.CurrentUser.UpdateOneAsync(filter, update);
             }
             catch
             {
                 throw;
             }
+        }
+
+        private ProjectionDefinition<CurrentUser> GetProjection()
+        {
+            ProjectionDefinition<CurrentUser> projection = "{ " +
+                "_id: 0, " +
+                "Auth0Id: 0, " +
+                "Avatar: 0, " +
+                "CreatedOn: 0, " +
+                "Countrycode: 0, " +
+                "Age: 0, " +
+                "Height: 0, " +
+                "Contactable: 0, " +
+                "Description: 0, " +
+                "Tags: 0, " +
+                "Body: 0, " +
+                "SmokingHabits: 0, " +
+                "HasChildren: 0, " +
+                "WantChildren: 0, " +
+                "HasPets: 0, " +
+                "LivesIn: 0, " +
+                "Education: 0, " +
+                "EducationStatus: 0, " +
+                "EmploymentStatus: 0, " +
+                "SportsActivity: 0, " +
+                "EatingHabits: 0, " +
+                "ClotheStyle: 0, " +
+                "BodyArt: 0, " +
+                "Gender: 0, " +
+                "Seeking: 0, " +
+                "Bookmarks: 0, " +
+                "ProfileFilter: 0, " +
+                "Languagecode: 0, " +
+                "Visited: 0, " +
+                "Likes: 0, " +
+                "Groups: 0, " +
+                "Complains: 0, " +
+                "ChatMemberslist: 0, " +
+                "}";
+
+            return projection;
         }
     }
 }

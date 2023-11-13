@@ -89,7 +89,7 @@ namespace Artemis
                         // Remove image reference in database.
                         await _profileRepository.RemoveImageFromCurrentUser(currentUser, imageId);
 
-                        foreach (var size in Enum.GetNames(typeof(ImageSizeEnum)))
+                        foreach (var size in Enum.GetNames(typeof(ImageSizeEnum)))              // TODO: Have a look if we shoould use ImageSizeEnum
                         {
                             // TODO: Temp condition to add jpeg to un-typed images.
                             if (!imageModel.FileName.Contains('.'))

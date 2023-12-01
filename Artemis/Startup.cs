@@ -1,7 +1,6 @@
 using Artemis.Data;
 using Artemis.Helpers;
 using Artemis.Interfaces;
-using Artemis.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;

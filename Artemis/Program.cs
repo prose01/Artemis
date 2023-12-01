@@ -15,14 +15,6 @@ namespace Artemis
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-
-                    // TODO: Look at Kestrel https://learn.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-7.0#kestrel-maximum-request-body-size
-                    //webBuilder.ConfigureKestrel((context, options) =>
-                    //{
-                    //    // Handle requests up to 50 MB
-                    //    options.Limits.MaxRequestBodySize = 52428800;
-                    //})
-                    //.UseStartup<Startup>();
                 });
     }
 }

@@ -130,7 +130,6 @@ namespace Artemis.Data
                 "Likes: 0, " +
                 "Groups: 0, " +
                 "Complains: 0, " +
-                "ChatMemberslist: 0, " +
                 "}";
 
             return projection;

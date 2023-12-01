@@ -1,12 +1,7 @@
 ﻿using Artemis.Interfaces;
 using Artemis.Model;
 using Microsoft.AspNetCore.Http;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Processors.Transforms;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -22,9 +17,6 @@ namespace Artemis
             _azureBlobStorage = azureBlobStorage;
             _profileRepository = profileRepository;
         }
-
-        // Check this website for more info on this - https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-3.1
-
 
         /// <summary>Adds the image to current user.</summary>
         /// <param name="currentUser">The current user.</param>

@@ -1,6 +1,5 @@
 ﻿using Artemis.Model;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Artemis.Interfaces
@@ -9,8 +8,6 @@ namespace Artemis.Interfaces
     {
         Task AddImageToCurrentUser(CurrentUser currentUser, IFormFile image, string title);
         Task DeleteImagesForCurrentUser(CurrentUser currentUser, string[] imageIds);
-        //Task<List<byte[]>> GetImagesAsync(string profileId, ImageSizeEnum imageSize);
-        //Task<byte[]> GetImageByFileName(string profileId, string fileName, ImageSizeEnum imageSize);
         Task DeleteAllImagesForProfile(CurrentUser currentUser, string profileId);
         Task DeleteAllImagesForCurrentUser(CurrentUser currentUser);
     }

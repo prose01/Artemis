@@ -1,5 +1,6 @@
 ﻿using Artemis.Interfaces;
 using Artemis.Model;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System;
@@ -12,9 +13,9 @@ namespace Artemis.Data
     {
         private readonly ProfileContext _context = null;
 
-        public CurrentUserRepository(IOptions<Settings> settings)
+        public CurrentUserRepository(IConfiguration config)
         {
-            _context = new ProfileContext(settings);
+            _context = new ProfileContext(config);
         }
 
         /// <summary>Gets the current profile by Auth0Id.</summary>

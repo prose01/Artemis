@@ -1,6 +1,6 @@
 ﻿using Artemis.Interfaces;
 using Artemis.Model;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -12,9 +12,9 @@ namespace Artemis.Helpers
         private readonly ICurrentUserRepository _profileRepository;
         private readonly string _nameidentifier;
 
-        public HelperMethods(IOptions<Settings> settings, ICurrentUserRepository profileRepository)
+        public HelperMethods(IConfiguration config, ICurrentUserRepository profileRepository)
         {
-            _nameidentifier = settings.Value.Auth0Id;
+            _nameidentifier = config.GetValue<string>("Auth0_Claims_nameidentifier");
             _profileRepository = profileRepository;
         }
 

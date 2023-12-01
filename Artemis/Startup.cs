@@ -103,13 +103,6 @@ namespace Artemis
                 });
             });
 
-            services.Configure<Settings>(options =>
-            {
-                options.ConnectionString = Configuration.GetSection("Mongo_ConnectionString").Value;
-                options.Database = Configuration.GetSection("Mongo_Database").Value;
-                options.Auth0Id = Configuration.GetSection("Auth0_Claims_nameidentifier").Value;
-            });
-
             services.AddControllers();
         }
 

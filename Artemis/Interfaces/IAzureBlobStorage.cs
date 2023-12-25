@@ -8,5 +8,6 @@ namespace Artemis.Interfaces
         Task UploadAsync(string profileIdPath, string fileName, Stream fileStream);
         Task DeleteImageByFileNameAsync(string fileName);
         Task DeleteAllImagesAsync(string profileId);
+        Task CopyImageFromRandomFolderToProfileId(string sourceImage, string profileId);
     }
 }

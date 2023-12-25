@@ -253,6 +253,39 @@ namespace Artemis.Controllers
             }
         }
 
+        /// <summary>ACopy image from the random imgae folder to ProfileId.</summary>
+        /// <param name="sourceImage">The sourceImage identifier.</param>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <exception cref="ArgumentException">You don't have admin rights to add images.</exception>
+        [NoCache]
+        [HttpPost("~/CopyImageFromRandomFolderToProfileId/{sourceImage}")]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+
+        public async Task<IActionResult> CopyImageFromRandomFolderToProfileId([FromRoute] string sourceImage, [FromBody] string profileId)
+        {
+            try
+            {
+                var adminUser = await _helper.GetCurrentUserProfile(User);
+
+                if (adminUser == null || adminUser.Name == null)
+                {
+                    return NotFound();
+                }
+
+                if (!adminUser.Admin) throw new ArgumentException("You don't have admin rights to add images.");
+
+                await _imageUtil.CopyImageFromRandomFolderToProfileId(sourceImage, profileId);
+
+                return NoContent();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         #endregion
     }
 }

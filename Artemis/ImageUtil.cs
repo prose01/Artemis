@@ -121,5 +121,23 @@ namespace Artemis
                 throw;
             }
         }
+
+        /// <summary>Copy image from the random imgae folder to ProfileId</summary>
+        /// <param name="sourceImage">The sourceImage identifier.</param>
+        /// <param name="profileId">The profile identifier.</param>
+        /// <exception cref="ArgumentException">ProfileId is missing. {currentUser.ProfileId}</exception>
+        public async Task CopyImageFromRandomFolderToProfileId(string sourceImage, string profileId)
+        {
+            if (string.IsNullOrEmpty(profileId)) throw new ArgumentException("ProfileId is missing.");
+
+            try
+            {
+                await _azureBlobStorage.CopyImageFromRandomFolderToProfileId(sourceImage, profileId);
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

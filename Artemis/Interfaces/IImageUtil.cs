@@ -10,5 +10,6 @@ namespace Artemis.Interfaces
         Task DeleteImagesForCurrentUser(CurrentUser currentUser, string[] imageIds);
         Task DeleteAllImagesForProfile(CurrentUser currentUser, string profileId);
         Task DeleteAllImagesForCurrentUser(CurrentUser currentUser);
+        Task CopyImageFromRandomFolderToProfileId(string sourceImage, string profileId);
     }
 }

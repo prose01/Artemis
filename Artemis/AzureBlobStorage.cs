@@ -1,6 +1,7 @@
 ﻿using Artemis.Interfaces;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Threading.Tasks;
@@ -62,6 +63,29 @@ namespace Artemis
                     await blobClient.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
                 }
 
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        //-------------------------------------------------
+        // Copy a blob from the same storage account
+        //-------------------------------------------------
+        public async Task CopyImageFromRandomFolderToProfileId(string sourceImage, string profileId)
+        {
+            try
+            {
+                var sourcePath = Path.Combine("randomImages", sourceImage.ToString() + ".webp");
+                BlobClient sourceBlob = _container.GetBlobClient(sourcePath);
+
+                var destinationPath = Path.Combine(profileId, sourceImage + ".webp");
+                BlockBlobClient destinationBlob = _container.GetBlockBlobClient(destinationPath);
+
+                // Get the source blob URI and create the destination blob
+                // overwrite param defaults to false
+                await destinationBlob.SyncUploadFromUriAsync(sourceBlob.Uri/*, overwrite: false*/);
             }
             catch
             {
